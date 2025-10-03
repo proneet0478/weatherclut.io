@@ -1,0 +1,33 @@
+{
+  "name": "weatherclut-backend",
+  "version": "1.0.0",
+  "description": "Backend for WeatherClut.io - user tracking and daily reports",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "weather",
+    "backend",
+    "daily-report",
+    "notifications"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^7.3.4",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^6.9.4",
+    "openai": "^5.17.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.4"
+  }
+}

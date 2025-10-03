@@ -1,0 +1,2560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2196f3">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weatherclut.io</title>
+  <link rel="stylesheet" href="button.css">
+  <style>
+
+    .hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+/* Global box-sizing and prevent horizontal scroll */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* prevent horizontal scroll */
+  width: 100%;
+  font-family: sans-serif;
+  transition: background 0.4s, color 0.4s;
+}
+
+/* Global box-sizing and prevent horizontal scroll */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  width: 100%;
+  font-family: sans-serif;
+  transition: background 0.4s, color 0.4s;
+}
+
+/* Modal, card, hour-card, widget responsiveness */
+.modal-content,
+.card,
+.hour-card,
+.widget {
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 15px;
+  transition: background 0.4s, color 0.4s;
+  word-wrap: break-word; /* Prevent text overflow */
+}
+
+/* Navbar mobile dropdown fix */
+@media (max-width: 768px) {
+  .navbar ul {
+    right: 150px !important;
+    width: 180px;
+  }
+}
+
+#hamburger {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 30px;
+}
+#hamburger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: black; /* default */
+  transition: background 0.3s;
+}
+
+/* Container of the toggle button */
+.toggle-btn {
+  position: fixed;
+  top: 5px;       /* lowered from 20px → brings it closer to navbar */
+  right: 40px;    /* keep it aligned to the right side */
+  z-index: 1000;  /* keeps it above other elements */
+}
+
+/* Light Mode */
+body.light .card,
+body.light .modal-content,
+body.light .widget,
+body.light .modal {
+  background: #fff;
+  color: #000;
+}
+
+/* Dark Mode */
+body.dark .card,
+body.dark .modal-content,
+body.dark .widget,
+body.dark .modal {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+/* Extra: text inside modals */
+body.dark .modal h2,
+body.dark .modal label,
+body.dark .modal a,
+body.dark .modal li,
+body.dark .modal span,
+body.dark .modal div {
+  color: #fff !important;
+}
+
+body.light .modal h2,
+body.light .modal label,
+body.light .modal a,
+body.light .modal li,
+body.light .modal span,
+body.light .modal div {
+  color: #000 !important;
+}
+
+    .twemoji-small {
+      width: 20px;     /* change size here */
+      height: 20px;    /* keep aspect ratio */
+      vertical-align: middle;
+    }
+
+/* Base Styles */
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;}
+body{background:#000000;margin:0;padding:0;}
+button, a, li {outline:none; -webkit-tap-highlight-color: transparent;}
+*:focus {outline:none;}
+
+/* Container */
+.page-container{padding:0px;}
+
+/* Navbar */
+.navbar{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;position:sticky;top:0;z-index:10;background:#FFFFF;}
+.navbar ul{display:flex;list-style:none;gap:15px;}
+.navbar ul li{cursor:pointer;padding:5px 10px;border-radius:5px;transition:0.3s;font-size:14px;}
+.navbar ul li:hover{background:rgba(0,0,0,0.05);}
+
+/* 🌙 Dark Mode Navbar Dropdown */
+body.dark .navbar ul {
+  background: #1e1e1e;   /* dark background for dropdown */
+}
+
+/* ☀️ Light Mode Navbar Dropdown (default) */
+body.light .navbar ul {
+  background: #fff;      /* light background for dropdown */
+}
+
+/* 🌙 Dark Mode Weather Modal Cards */
+body.dark #weatherPage .card {
+  background: #1e1e1e;    /* dark background */
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  border: 1px solid #333;
+}
+
+/* 🌙 Dark Mode Weather Card Labels/Text */
+body.dark #weatherPage .card h1,
+body.dark #weatherPage .card h2,
+body.dark #weatherPage .card h3,
+body.dark #weatherPage .card p,
+body.dark #weatherPage .card span,
+body.dark #weatherPage .card label {
+  color: #ddd; /* light gray text for readability */
+}
+
+/* 🌙 Dark Mode Progress Bars */
+body.dark #weatherPage .progress-bar {
+  background: #333;   /* darker track */
+}
+
+/* Dark Mode Progress Bar Fills */
+body.dark #weatherPage .progress-bar .green {
+  background: #4caf50;
+}
+body.dark #weatherPage .progress-bar .yellow {
+  background: #ffb74d;
+}
+body.dark #weatherPage .progress-bar .red {
+  background: #e57373;
+}
+body.dark #weatherPage .progress-bar .blue {
+  background: #64b5f6;
+}
+
+/* ☀️ Light Mode Weather Cards */
+body.light #weatherPage .card {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ☀️ Light Mode Weather Text */
+body.light #weatherPage .card h1,
+body.light #weatherPage .card h2,
+body.light #weatherPage .card h3,
+body.light #weatherPage .card p,
+body.light #weatherPage .card span,
+body.light #weatherPage .card label {
+  color: #000;
+}
+
+/* ☀️ Light Mode Progress Bars */
+body.light #weatherPage .progress-bar {
+  background: #eee;
+}
+
+
+.hamburger {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 30px;
+}
+.hamburger div {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: black; /* default */
+  transition: background 0.3s;
+}
+
+/* Mobile Navbar */
+@media(max-width:9868px){
+  .navbar ul {display:none;flex-direction:column;position:absolute;top:25px;right:150px;background:rgba(255,255,255,0.95);padding:10px;border-radius:12px;width:200px;}
+  .navbar ul.show {display:flex;}
+}
+
+/* Modals */
+.modal{display:none;position:fixed;z-index:200;left:0;top:0;width:100%;height:100%;background:rgba(255,255,255,0.95);justify-content:center;align-items:flex-start;padding-top:50px;}
+
+  /* Desktop: modal at bottom */
+@media (min-width: 76000px) {
+  .modal {
+    justify-content: center;   /* horizontally center */
+    align-items: flex-end;     /* push content to bottom */
+    padding-top: 0;
+    padding-bottom: 30px;      /* little gap from bottom */
+  }
+
+  .modal-content {
+    margin: 0 auto;
+    border-radius: 12px 12px 0 0; /* round top corners only */
+    animation: slideUp 0.3s ease; /* smooth animation */
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+}
+  
+  
+.modal-content{background:#fff;padding:20px;border-radius:12px;width:95%;max-width:400px;position:relative;overflow:auto;}
+.modal-content h2{text-align:center;margin-bottom:15px;font-size:20px;}
+.modal-content label{display:block;margin-bottom:5px;color:#555;font-weight:bold;font-size:14px;}
+.modal-content input{width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:14px;}
+.modal-content button{width:100%;padding:12px;border:none;border-radius:6px;background:#007BFF;color:#fff;font-size:16px;cursor:pointer;transition:0.3s;}
+.modal-content button:hover{background:#0056b3;}
+.modal-content .close{position:absolute;top:10px;right:15px;font-size:22px;font-weight:bold;cursor:pointer;color:#333;}
+.error{color:red;font-size:12px;margin-bottom:8px;}
+.success{color:green;font-size:14px;text-align:center;margin-top:10px;}
+.redirect-login{text-align:center;margin-top:8px;font-size:12px;}
+.redirect-login a{color:#007BFF;text-decoration:none;font-weight:bold;}
+.redirect-login a:hover{text-decoration:underline;}
+
+/* === Modal Base === */
+#weatherPage {
+  display: none;
+  position: fixed;
+  top: -20; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#weatherPage .modal-content {
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+#weatherPage .close {
+  cursor: pointer;
+  font-size: 24px;
+  float: right;
+}
+
+#weatherPage .search-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#searchInputPage {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#searchBtnPage {
+  padding: 10px 15px;
+  margin-left: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #2196f3;
+  color: #fff;
+  cursor: pointer;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+  gap: 15px;
+}
+
+.card {
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* === Light Mode (default) === */
+body.light #weatherPage .modal-content {
+  background: #fff;
+  color: #000;
+}
+
+body.light #weatherPage .card {
+  background: #f9f9f9;
+  color: #000;
+}
+
+/* === Dark Mode === */
+body.dark #weatherPage .modal-content {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+body.dark #weatherPage .card {
+  background: #2a2a2a;
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+  border: 1px solid #444;
+}
+
+body.dark #weatherPage .label,
+body.dark #weatherPage .value-label {
+  color: #ddd;
+}
+
+/* 🌤️ Weather Dashboard */
+
+#weatherPage {
+  display: none;
+  margin-top: 10px; /* smaller spacing for compact fit */
+  padding: 8px;
+}
+
+#weatherPage h1 {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 16px; /* slightly smaller */
+}
+
+.search-container {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+#searchInputPage {
+  padding: 8px 10px;
+  width: 70%;
+  max-width: 220px;
+  font-size: 13px;
+  border-radius: 18px;
+  border: 1px solid #ccc;
+}
+
+#searchBtnPage {
+  padding: 8px 12px;
+  margin-left: 2px;
+  font-size: 13px;
+  border-radius: 18px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+#searchBtnPage:hover {
+  background-color: #43a047;
+  transform: scale(1.01);
+}
+
+/* 📊 Dashboard Grid */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* 🪧 Card Styling */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: 0.3s ease;
+}
+
+.card .label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+/* ✨ Hover Glow Effect */
+.card:hover {
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+  transform: translateY(-3px);
+  animation: blinkGlow 1.5s infinite alternate;
+}
+
+@keyframes blinkGlow {
+  0% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); }
+  100% { box-shadow: 0 0 18px rgba(76, 175, 80, 0.7); }
+}
+
+/* 📉 Bar Styles */
+.bar-container {
+  position: relative;
+  height: 10px;  /* reduced height */
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  width: 0;
+  border-radius: 10px;
+  text-align: right;
+  line-height: 10px;
+  padding-right: 6px;
+  color: white;
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  transition: width 1.5s ease, background 1s ease;
+}
+
+.value-label {
+  margin-top: 4px;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* 🔄 Bar Animations */
+#pressure-bar {
+  background: linear-gradient(270deg, #FFC107, #FF9800, #FFC107);
+  background-size: 600% 100%;
+  animation: gradientMove 4s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 0%; }
+}
+
+#visibility-bar {
+  background: linear-gradient(90deg, #4CAF50 20%, #8BC34A 40%, #4CAF50 60%);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0%; }
+}
+
+#uv-bar {
+  background: linear-gradient(to right, #F44336, #FFC107);
+}
+
+/* 📱 Responsive for Mobile */
+@media (min-width: 600px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .dashboard {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 🖐️ Touch Friendly */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+    :root {
+      --card-bg-light: rgba(255,255,255,0.7);
+      --card-bg-dark: rgba(255,255,255,0.1);
+    }
+    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; transition: background .4s, color .4s; }
+    body.light { background: #e0f7fa; color: #000; }
+    body.dark  { background: #121212; color: #fff; }
+
+    .container { padding: 20px; max-width: 600px; margin: auto; position: relative; z-index: 2; text-align: center; }
+
+    .section { margin: 20px 0; padding: 20px; border-radius: 12px; transition: background .4s; width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1); text-align: left; }
+    body.light .section { background: var(--card-bg-light); }
+    body.dark  .section { background: var(--card-bg-dark); }
+    .section h2, .section h3 { text-align: center; margin: 0 0 10px; }
+
+    input[type="text"] { padding: 10px; width: 70%; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 10px; }
+    button { padding: 10px 15px; margin: 5px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
+
+    .toggle-btn { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .background { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; transition: background .6s ease; }
+   
+  
+  .sunny {
+    background: linear-gradient(to bottom, #87ceeb, #fdf6e3);
+  }
+
+  .cloudy {
+    background: linear-gradient(to bottom, #a1a1a1, #dcdcdc);
+  }
+
+  .rain {
+    background: linear-gradient(to bottom, #4a4a4a, #2c3e50);
+  }
+
+  .thunderstorm {
+    background: linear-gradient(to bottom, #232526, #414345);
+  }
+
+  .snowy {
+    background: linear-gradient(to bottom, #e0eafc, #cfdef3);
+  }
+
+  .foggy {
+    background: linear-gradient(to bottom, #d7d2cc, #304352);
+  }
+  
+    .raindrop { position: absolute; width: 2px; height: 15px; background: rgba(255,255,255,.4); bottom: 100%; animation: rainDrop .7s linear infinite; }
+    @keyframes rainDrop { to { transform: translateY(110vh); } }
+
+    .lightning { position: absolute; inset: 0; background: rgba(255,255,255,.8); animation: flash .2s ease-in-out; z-index: 1; }
+    @keyframes flash { 0%,20%,40%,100% {opacity:0;} 10%,30% {opacity:1;} }
+
+    .snowflake { position: absolute; top: -10px; font-size: 12px; animation: snowFall linear infinite; opacity: .8; }
+    @keyframes snowFall { 0% { transform: translateY(-10px) translateX(0); } 100% { transform: translateY(110vh) translateX(20px); } }
+
+    iframe { width: 100%; height: 300px; border: none; border-radius: 10px; }
+    .hourly-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; }
+    .hour-card { min-width: 110px; border-radius: 10px; padding: 10px; background: rgba(255,255,255,.2); text-align:center; }
+
+    .glow-bg { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,212,255,.3) 0%, transparent 70%); border-radius: 50%; filter: blur(50px); z-index: 0; animation: pulse 6s ease-in-out infinite; margin:auto; left:0; right:0;}
+    @keyframes pulse {0%,100%{transform:scale(1);opacity:.6;}50%{transform:scale(1.2);opacity:.8;}}
+    .widget { position: relative; z-index: 1; width: 90%; max-width: 400px; background: rgba(255,255,255,.05); border-radius: 20px; padding: 20px; backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,.4); text-align: center; margin: auto; }
+    .location { font-size: 12px; margin-bottom: 8px; color: #ccc; }
+    .top { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; opacity: .9; }
+    .emoji { font-size: 24px; margin-bottom: 5px; }
+    .bar-container { position: relative; height: 8px; background: rgba(255,255,255,.2); border-radius: 4px; margin: 15px 0; overflow: hidden; }
+    .bar-fill { position: absolute; top: 0; left: 0; height: 100%; background: #a6e1fa; width: 0%; transition: width 1s ease-in-out; border-radius: 4px; }
+    .moon { position: absolute; top: -14px; width: 28px; height: 28px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 8px 3px #d1c4e9; transition: left 1s ease-in-out; }
+    .bottom { display: flex; justify-content: space-between; font-size: 16px; margin-top: 10px; }
+    .progress-info { margin-top: 10px; font-size: 14px; color: #a6e1fa; }
+
+/* Make Twemoji emojis small and neat */
+.twemoji-small {
+  width: 18px;       /* Adjust width */
+  height: 18px;      /* Adjust height */
+  display: inline-block;
+  vertical-align: middle; /* aligns with text nicely */
+  object-fit: contain;    /* prevents stretching */
+  margin: 0 2px;          /* optional spacing between emojis */
+}
+
+ /* Hide weather section by default */
+ #weatherSection { display:none ; }
+ 
+
+/* Hide toggle when not needed */
+#toggleBtn.hidden {
+  display: none !important;
+}
+
+.toggle-btn {
+  position: fixed;
+  top: 5px; /* move it 50px from the top */
+  right: 10px;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+.toggle-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ================= FESTIVAL CARD ================= */
+.festival-card {
+  background: var(--card-light);
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  text-align: center;
+  width: 460px;
+  transition: background 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
+  cursor: pointer; /* makes it clear it's interactive */
+}
+
+/* Hover effect */
+.festival-card:hover {
+  transform: translateY(-5px); /* slight lift effect */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  background: var(--card-light-hover, #ffeaa7); /* optional hover color */
+}
+
+/* Headings and text */
+.festival-card h1 { 
+  font-size: 2em; 
+  margin-bottom: 15px; 
+  text-shadow: 0 0 15px rgba(0,0,0,0.1); 
+}
+
+#festival { 
+  font-size: 1.2em; 
+  margin-top: 10px; 
+  color: #fbc531; 
+  font-weight: bold; 
+}
+
+#suggestion { 
+  font-size: 1em; 
+  margin-top: 8px; 
+  color: #00cec9; 
+  font-style: italic; 
+}
+
+#noOccasion { 
+  font-size: 1em; 
+  margin-top: 10px; 
+  color: #555; 
+}
+
+#upcoming { 
+  font-size: 1em; 
+  margin-top: 10px; 
+  color: #27ae60; 
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  body { 
+    background: var(--bg-dark); 
+    color: var(--text-dark); 
+  }
+  .festival-card { 
+    background: var(--card-dark); 
+    color: var(--text-dark); 
+  }
+  #noOccasion { 
+    color: #aaa; 
+  }
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ✅ About Modal Overlay */
+.about-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4); /* transparent dark overlay */
+  backdrop-filter: blur(6px);   /* blur background */
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* ✅ About Modal Content Box */
+.about-content {
+  background: var(--bg-box);  /* box background */
+  color: var(--text);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  position: relative;
+  z-index: 1000;
+  transition: background 0.3s, color 0.3s;
+}
+
+.about-content h2 {
+  margin-top: 0;
+}
+
+/* Close Button */
+.close-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 8px;
+  background: #ccc;
+  transition: 0.3s ease;
+}
+
+/* ✅ Light Mode */
+body.light-mode {
+  --bg: #e8f0ff;    /* page background */
+  --bg-box: #ffffff; /* modal box background */
+  --text: #1a1a1a;  /* text black */
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ✅ Dark Mode */
+body.dark-mode {
+  --bg: #0d0d1a;    /* page background */
+  --bg-box: #1a1a2e; /* modal box background */
+  --text: #f4f9ff;  /* text white */
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.dark-mode .close-btn {
+  background: #222;
+  color: #fff;
+  box-shadow: 0 0 10px 2px limegreen;
+}
+
+
+
+  </style>
+</head>
+<nav class="navbar">
+  <div class="hamburger" id="hamburger">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+  <ul id="nav-links">
+    <li id="openSignUp">Sign Up</li>
+    <li id="openLogin">Login</li> 
+
+    <button class="about-btn" onclick="openAbout()">About</button>
+
+    <button id="toggleAlerts">Enable Alerts</button>
+    <div id="weatherBox" style="display:none;"></div>
+  </ul>
+</nav>
+
+<script src="sw.js"></script>
+<script src="main.js"></script>
+<script src="server.js"></script>
+<script src="server.js"></script>
+<script src="track.js"></script>
+<script src="import.js"></script>
+<script src="button.js"></script>
+<!-- Page Container -->
+<div class="page-container">
+
+<!-- Sign-Up Modal -->
+<div id="signupModal" class="modal auth-modal">
+  <div class="modal-content">
+    <span class="close" id="closeSignUp">&times;</span>
+    <h2>Create Account</h2>
+    <form id="signupForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Enter full name" required>
+      <div id="nameError" class="error"></div>
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter email" required>
+      <div id="emailError" class="error"></div>
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter password" required>
+      <div id="passwordError" class="error"></div>
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" placeholder="Confirm password" required>
+      <div id="confirmPasswordError" class="error"></div>
+      <button type="submit">Sign Up</button>
+      <div id="signupSuccess" class="success"></div>
+    </form>
+    <div class="redirect-login">Already have an account? <a href="#" id="switchToLogin">Login</a></div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal auth-modal">
+  <div class="modal-content">
+    <span class="close" id="closeLogin">&times;</span>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" placeholder="Enter email" required>
+      <div id="loginEmailError" class="error"></div>
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter password" required>
+      <div id="loginPasswordError" class="error"></div>
+      <button type="submit">Login</button>
+      <div id="loginSuccess" class="success"></div>
+    </form>
+    <div class="redirect-login"><a href="#" id="forgotPassword">Forgot Password?</a></div>
+  </div>
+</div>
+
+
+ 
+
+
+
+<!-- Weather Overlay -->
+<div id="weatherPage" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeWeather">&times;</span>
+    <h1>Weather Dashboard</h1>
+    <div class="search-container">
+      <input type="text" id="searchInputPage" placeholder="Enter city, state, district, locality, country">
+      <button id="searchBtnPage">Search</button>
+    </div>
+
+    <div class="dashboard">
+      <!-- Air Quality -->
+      <div class="card">
+        <div class="label">Air Quality (PM2.5)</div>
+        <div class="bar-container">
+          <div id="aqi-bar-page" class="bar">0</div>
+        </div>
+        <div id="aqi-value-page" class="value-label"></div>
+      </div>
+
+      <!-- Air Pressure -->
+      <div class="card">
+        <div class="label">Air Pressure (hPa)</div>
+        <div class="bar-container">
+          <div id="pressure-bar-page" class="bar">0</div>
+        </div>
+        <div id="pressure-value-page" class="value-label"></div>
+      </div>
+
+      <!-- Visibility -->
+      <div class="card">
+        <div class="label">Visibility (km)</div>
+        <div class="bar-container">
+          <div id="visibility-bar-page" class="bar">0</div>
+        </div>
+        <div id="visibility-value-page" class="value-label"></div>
+      </div>
+
+      <!-- UV Index -->
+      <div class="card">
+        <div class="label">UV Index</div>
+        <div class="bar-container">
+          <div id="uv-bar-page" class="bar">0</div>
+        </div>
+        <div id="uv-value-page" class="value-label"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<body class="light">
+
+  <!-- About Modal -->
+  <div id="aboutModal" class="about-modal">
+    <div class="about-content">
+      <h2>Welcome</h2>
+      <p>
+        Welcome to our website! Here, you can easily search locations, 
+        connect with people you know, and explore weather updates in your area.
+         The site automatically detects your location and shows real-time conditions in Celsius.
+          Built in India, it runs smoothly on both desktop and mobile devices. 
+          You’ll also receive greetings on festivals and occasions, making your experience more engaging.
+           We are constantly improving to provide you with a smooth, reliable service. If you face any issues, 
+           feel free to report them via Gmail. Thank you for visiting—your support means a lot and helps us grow!
+
+      </p>
+      <p><strong>Email:</strong> proneet124@gmail.com</p>
+      <button class="close-btn" onclick="closeAbout()">Close</button>
+    </div>
+  </div>
+
+
+
+ <!-- Your Toggle Button -->
+<div class="toggle-btn" id="toggleBtn">
+  <button id="darkToggle">🌓 Dark Mode</button>
+</div>
+  <div class="background" id="background"></div>
+ 
+  <div class="container">
+    <center><h1>🌦️ Weatherclut</h1></center>
+    <input type="text" id="cityInput" placeholder="Enter city or PIN code"/>
+    <button id="btnSearch">🔍 Search</button>
+    <button id="btnLocate">📍 Use My Location</button>
+
+    <div class="section" id="currentWeather">👋 Waiting for input...</div>
+    <div class="section" id="forecast"></div>
+
+    <div class="section"><h3>📡 Live Radar Map</h3><iframe id="radarMap" src=""></iframe></div>
+
+    <div class="section"><h3>⏳ Hourly Forecast</h3><div class="hourly-scroll" id="hourlyForecast"></div></div>
+
+    <div class="section">
+      <div class="glow-bg"></div>
+      <div class="widget">
+        <div class="location" id="location">Fetching location...</div>
+        <div class="top" id="icon-row"></div>
+        <div class="bar-container" id="bar">
+          <div class="bar-fill" id="fill"></div>
+          <div class="moon" id="moon">🌙</div>
+        </div>
+        <div class="bottom" id="time-row"></div>
+        <div class="progress-info" id="progress">--</div>
+      </div>
+    </div>
+
+    <div class="section" id="moodActivity"><h3>🎭 Mood & Activity</h3><p id="moodText">--</p></div>
+    <div class="section" id="clothing"><h3>👕 Clothing Advice</h3><p id="clothingText">--</p></div>
+
+    <div class="section">
+      <h3>⚡ Energy Saver</h3>
+      <button id="btnEnergy">Toggle Energy Saver</button>
+      <p id="energyStatus">Normal mode</p>
+    </div>
+    <div class="card">
+      <h1 id="greeting">Loading...</h1>
+      <div id="festival"></div>
+      <div id="suggestion"></div>
+      <div id="noOccasion"></div>
+      <div id="upcoming"></div>
+    </div>
+
+    <div class="section">
+      <h3>🎨 Weather Wallpaper</h3>
+      <button id="btnWallpaper">Download Wallpaper</button>
+    </div>
+  </div>
+
+<!-- Load libraries FIRST -->
+<script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Replace emojis globally
+    twemoji.parse(document.body, {
+      folder: 'svg', // use SVG for scalable images
+      ext: '.svg',
+      className: 'twemoji-small', // attach custom CSS class
+    });
+  });
+  </script>
+
+<!-- App script -->
+
+<script> 
+
+ 
+   // ✅ Modal Functions
+   function openAbout() {
+    document.getElementById("aboutModal").style.display = "flex";
+  }
+
+  function closeAbout() {
+    document.getElementById("aboutModal").style.display = "none";
+  }
+
+  // ✅ Dark Mode Toggle
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    document.body.classList.toggle("light-mode");
+  }
+
+  // ✅ Auto-detect system theme
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.body.classList.remove("light-mode");
+    document.body.classList.add("dark-mode");
+  }
+
+  // ✅ Live system theme change
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (e.matches) {
+      document.body.classList.remove("light-mode");
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+      document.body.classList.add("light-mode");
+    }
+  });
+
+ /* Festival + Greeting app
+       - Primary source: Google Calendar REST v3 (public calendar via API key)
+       - Fallback: Expanded local festival list (many religions / regions / jayantis / special days)
+       - Also supports year-specific overrides for variable-date festivals (Navratri, Durga Puja, etc.)
+       - Normalizes dates to local midnight (so "today" always matches)
+       - To keep things accurate each year: maintain a public Google Calendar with festival events (recommended).
+    */
+     
+    // ---------------- CONFIG ----------------
+    const WEATHER_API_KEY = "cae4d08452074b1483844427250807";
+    const API_KEY = "AIzaSyAlmZxuEBe26F5th6154IGz35EpHOc2TwU"; // your API key (public-calendar access only)
+    const CALENDAR_ID = "your_festival_calendar_id@group.calendar.google.com"; // set a public festival calendar id here
+
+    const LOOKAHEAD_DAYS = 400; // how many days ahead to fetch/consider (covers next year)
+    
+    // ---------------- HELPERS ----------------
+    function getGreeting() {
+      const hour = new Date().getHours();
+      if (hour < 12) return "Good Morning ";
+      if (hour < 17) return "Good Afternoon ";
+      if (hour < 21) return "Good Evening ";
+      return "Good Night 🌙";
+    }
+    function normalizeDate(d) {
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+    function isoDateTimeAtStartOfDay(d) {
+      return normalizeDate(d).toISOString();
+    }
+    function addDays(date, days) {
+      const d = new Date(date);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+    function sameDay(a,b) { return normalizeDate(a).getTime() === normalizeDate(b).getTime(); }
+    
+    // Easter (Western) for Christian movable dates
+    function getEasterDate(y){
+      const f = Math.floor,
+            G = y % 19,
+            C = f(y / 100),
+            H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
+            I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)),
+            J = (y + f(y / 4) + I + 2 - C + f(C / 4)) % 7,
+            L = I - J,
+            month = 3 + f((L + 40) / 44),
+            day = L + 28 - 31 * f(month / 4);
+      return new Date(y, month - 1, day);
+    }
+    
+    // ---------------- YEAR-SPECIFIC OVERRIDES ----------------
+    // Use this object to provide explicit dates for festivals that move each year.
+    // Format: { "2025": [{ name, date: "YYYY-MM-DD", wear }, ...], "2026": [...] }
+    const FESTIVAL_OVERRIDES = {
+      // I added the Navratri 2025 start example you mentioned (Sharad Navratri starting Sep 22, 2025).
+      // Add other year-specific dates here as needed (Durga Puja, Diwali, Eid, etc.)
+      "2025": [
+        { name: "Sharad Navratri Day 1 (Pratipada)", date: "2025-09-22", wear: "Yellow/Traditional" },
+        { name: "Sharad Navratri Day 2 (Dwitiya)", date: "2025-09-23", wear: "Green/Traditional" },
+        { name: "Sharad Navratri Day 3 (Tritiya)", date: "2025-09-24", wear: "Grey/Traditional" },
+        { name: "Sharad Navratri Day 4 (Chaturthi)", date: "2025-09-25", wear: "Orange/Traditional" },
+        { name: "Sharad Navratri Day 5 (Panchami)", date: "2025-09-26", wear: "White/Traditional" },
+        { name: "Sharad Navratri Day 6 (Shashti)", date: "2025-09-27", wear: "Red/Traditional" },
+        { name: "Sharad Navratri Day 7 (First Day Of Durga /festivities)", date: "2025-09-28", wear: "Blue/Traditional" },
+        { name: "Sharad Navratri Day 8 (Maha Saptami)", date: "2025-09-29", wear: "Pink/Traditional" },
+        { name: "Sharad Navratri Day 9 (Maha ashtami)", date: "2025-09-30", wear: "Purple/Traditional" },
+        { name: "Sharad Navratri Day 10 (Maha Navami)", date: "2025-10-01", wear: "Red-Orange/Traditional" },
+        { name: "Vijayadashami / Dussehra", date: "2025-10-02", wear: "Festive" },
+
+        // add Durga Puja / Kali Puja / Diwali exact 2025 dates here if desired
+      ],
+      // Add 2026, 2027 etc. when needed
+    };
+    
+    // Helper to expand overrides into event objects
+    function getOverridesForYear(year) {
+      const arr = FESTIVAL_OVERRIDES[String(year)] || [];
+      return arr.map(o => ({ name: o.name, date: new Date(o.date), wear: o.wear || "" }));
+    }
+    
+    // ---------------- LOCAL FALLBACK LIST (many festivals)
+    // This is an expanded local list for quick fallback if the remote calendar isn't set.
+    // NOTE: For festivals that move yearly (Navratri/Durga Puja/Eid/Diwali), use the calendar or overrides.
+    function getLocalFestivalList(year) {
+      const easter = getEasterDate(year);
+      const list = [
+        // --- National ---
+        { name: "New Year", date: new Date(year,0,1), wear:"Casual party wear 🎉" },
+        { name: "Republic Day", date: new Date(year,0,26), wear:"Tricolour attire 🇮🇳" },
+        { name: "Labour Day", date: new Date(year,4,1), wear:"Simple work attire 🛠️" },
+        { name: "Independence Day", date: new Date(year,7,15), wear:"White kurta/salwar with tricolour touch 🇮🇳" },
+        { name: "Gandhi Jayanti", date: new Date(year,9,2), wear:"White Khadi attire 🕊️" },
+    
+        // --- Hindu (many fixed/approx dates; movable ones should be in overrides or calendar) ---
+        { name:"Makar Sankranti", date:new Date(year,0,14), wear:"Bright ethnic wear 🪁" },
+        { name:"Pongal", date:new Date(year,0,15), wear:"South Indian traditional 🌾" },
+        { name:"Maha Shivratri", date:new Date(year,2,1), wear:"White/saffron 🕉️" },
+        { name:"Holi", date:new Date(year,2,14), wear:"White kurta for colours 🌈" },
+        { name:"Ram Navami", date:new Date(year,2,27), wear:"Yellow attire 🌞" },
+        { name:"Janmashtami", date:new Date(year,7,16), wear:"Yellow/Blue attire 🦚" },
+        { name:"Ganesh Chaturthi", date:new Date(year,8,7), wear:"Bright attire 🪔" },
+    
+        // --- Bengali / Kolkata ---
+        { name:"Pohela Boishakh (Bengali New Year)", date:new Date(year,3,14), wear:"Red & White attire 🎊" },
+        { name:"Saraswati Puja", date:new Date(year,0,26), wear:"Yellow attire 📚" },
+        { name:"Kali Puja", date:new Date(year,10,1), wear:"Black/Red attire 🕉️" },
+    
+        // --- Bihari ---
+        { name:"Chhath Puja", date:new Date(year,10,2), wear:"Traditional dhoti/saree 🌅" },
+        // (regional dates vary; use calendar for accuracy)
+    
+        // --- Muslim (use calendar for accurate lunar-based dates) ---
+        { name:"Eid al-Fitr (approx)", date:new Date(year,3,10), wear:"Festive wear 🕌" },
+        { name:"Eid al-Adha (approx)", date:new Date(year,5,17), wear:"Festive attire 🐑" },
+    
+        // --- Sikh ---
+        { name:"Baisakhi", date:new Date(year,3,13), wear:"Colourful Punjabi dress 💃" },
+    
+        // --- Jain ---
+        { name:"Mahavir Jayanti", date:new Date(year,3,21), wear:"White attire 🙏" },
+    
+        // --- Buddhist ---
+        { name:"Buddha Purnima", date:new Date(year,4,12), wear:"White/Yellow attire 🌼" },
+    
+        // --- Christian ---
+        { name:"Good Friday", date:new Date(easter.getFullYear(), easter.getMonth(), easter.getDate()-2), wear:"Somber attire ✝️" },
+        { name:"Easter", date:easter, wear:"Pastel colours ✝️" },
+        { name:"Christmas", date:new Date(year,11,25), wear:"Red & White 🎅" },
+    
+        // --- Jewish (approx / placeholders for fixed-year planning) ---
+        { name:"Hanukkah (start - placeholder)", date:new Date(year,11,18), wear:"Blue/White ✡️" },
+    
+        // --- Adivasi / Tribal (examples) ---
+        { name:"Karam Festival (example)", date:new Date(year,8,17), wear:"Traditional tribal attire 🌿" },
+        { name:"Sarhul (example)", date:new Date(year,2,23), wear:"Traditional attire 🌸" },
+    
+        // --- Jayantis / Special Days ---
+        { name:"Swami Vivekananda Jayanti", date:new Date(year,0,12), wear:"Simple attire 🙏" },
+        { name:"Rabindranath Tagore Jayanti", date:new Date(year,4,7), wear:"Traditional attire 🎨" },
+        { name:"Maharishi Valmiki Jayanti", date:new Date(year,8,27), wear:"Traditional attire 🙏" },
+        { name:"Guru Ravidas Jayanti", date:new Date(year,0,19), wear:"Traditional attire 🙏" },
+        { name:"Dr. Ambedkar Jayanti", date:new Date(year,3,14), wear:"Formal/traditional 📜" },
+    
+        // --- Special / Observances ---
+        { name:"Valentine's Day", date:new Date(year,1,14), wear:"Red outfits ❤️" },
+        // Mother's/Father's Day are 2nd/3rd Sunday - we'll calculate on the fly below
+      ];
+    
+      // add Mother's Day (2nd Sunday May) and Father's Day (3rd Sunday June)
+      function nthSundayOfMonth(y,m,n){
+        let dt=new Date(y,m,1),count=0;
+        while(dt.getMonth()===m){
+          if(dt.getDay()===0){ count++; if(count===n) return new Date(y,m,dt.getDate()); }
+          dt.setDate(dt.getDate()+1);
+        }
+      }
+      list.push({ name:"Mother's Day", date:nthSundayOfMonth(year,4,2), wear:"Elegant casuals 🌸" });
+      list.push({ name:"Father's Day", date:nthSundayOfMonth(year,5,3), wear:"Casual shirts 👔" });
+    
+      return list;
+    }
+    
+    // ---------------- GOOGLE CALENDAR FETCH ----------------
+    async function fetchEventsFromCalendar(apiKey, calendarId, timeMinISO, timeMaxISO){
+      const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${encodeURIComponent(apiKey)}&timeMin=${encodeURIComponent(timeMinISO)}&timeMax=${encodeURIComponent(timeMaxISO)}&singleEvents=true&orderBy=startTime&maxResults=2500`;
+      try {
+        const res = await fetch(url);
+        if(!res.ok){
+          const txt = await res.text();
+          console.warn("Google Calendar fetch failed",res.status, txt);
+          return [];
+        }
+        const data = await res.json();
+        if(!data.items) return [];
+        return data.items.map(ev => {
+          const start = ev.start.date ? new Date(ev.start.date) : new Date(ev.start.dateTime || ev.start.date);
+          return {
+            name: ev.summary || "Unnamed Event",
+            date: new Date(start.getFullYear(), start.getMonth(), start.getDate()),
+            wear: ev.description ? extractWearFromDescription(ev.description) : (ev.summary ? "" : "")
+          };
+        });
+      } catch(err){
+        console.error("fetchEventsFromCalendar error:", err);
+        return [];
+      }
+    }
+    
+    function extractWearFromDescription(desc){
+      const m = desc.match(/wear\s*:\s*(.+)/i);
+      return m ? m[1].trim() : "";
+    }
+    
+    // ---------------- BUILD MERGED ENTRIES ----------------
+    async function buildFestivalEntries() {
+      const today = new Date();
+      const start = normalizeDate(today);
+      const end = normalizeDate(addDays(start, LOOKAHEAD_DAYS));
+    
+      // 1) remote calendar (if config provided)
+      let remote = [];
+      if(API_KEY && CALENDAR_ID && !CALENDAR_ID.includes("your_festival_calendar_id")) {
+        remote = await fetchEventsFromCalendar(API_KEY, CALENDAR_ID, isoDateTimeAtStartOfDay(start), isoDateTimeAtStartOfDay(end));
+      } else {
+        console.warn("CALENDAR_ID not set to a public calendar — remote fetch skipped. To enable remote calendar, set CALENDAR_ID to a public festival calendar id.");
+      }
+    
+      // 2) local fallback for current year and also next year (so navigation across year boundary works)
+      const localThisYear = getLocalFestivalList(start.getFullYear());
+      const localNextYear = getLocalFestivalList(start.getFullYear()+1);
+    
+      // 3) overrides (year-specific precise dates, e.g. Navratri/Durga Puja)
+      const overridesThis = getOverridesForYear(start.getFullYear());
+      const overridesNext = getOverridesForYear(start.getFullYear()+1);
+    
+      // combine arrays
+      const combined = [...localThisYear, ...localNextYear, ...overridesThis, ...overridesNext, ...remote];
+    
+      // build map by ISO date string
+      const map = new Map();
+      for(const ev of combined){
+        if(!ev || !ev.date) continue;
+        const key = normalizeDate(ev.date).toISOString();
+        if(!map.has(key)) map.set(key, []);
+        // avoid duplicate names on same day
+        const arr = map.get(key);
+        if(!arr.find(x => x.name === ev.name)) arr.push(ev);
+      }
+    
+      // convert to sorted entries
+      const entries = Array.from(map.entries()).map(([iso, events]) => ({
+        date: new Date(iso),
+        events
+      })).sort((a,b) => a.date - b.date);
+    
+      return entries;
+    }
+    
+    // ---------------- GET TODAY / NEXT ----------------
+    function getTodaysFestivals(entries) {
+      const todayISO = normalizeDate(new Date()).toISOString();
+      const e = entries.find(x => x.date.toISOString() === todayISO);
+      return e ? e.events : [];
+    }
+    function getNextFestivalEntry(entries) {
+      const today = normalizeDate(new Date());
+      for(const e of entries){
+        if(e.date > today) return e;
+      }
+      return null;
+    }
+    
+    // ---------------- DISPLAY ----------------
+    async function displayGreetingAndFestival() {
+      const greetingEl = document.getElementById("greeting");
+      const festivalEl = document.getElementById("festival");
+      const suggestionEl = document.getElementById("suggestion");
+      const noOccasionEl = document.getElementById("noOccasion");
+      const upcomingEl = document.getElementById("upcoming");
+    
+      if(greetingEl) greetingEl.textContent = getGreeting();
+    
+      const entries = await buildFestivalEntries();
+    
+      // Today's events
+      const todays = getTodaysFestivals(entries);
+    
+      if(todays.length > 0){
+        if(festivalEl) festivalEl.textContent = "🎉 " + todays.map(t => t.name).join(", ") + " 🎉";
+        const wearEv = todays.find(t => t.wear && t.wear.trim()) || todays[0];
+        if(suggestionEl) suggestionEl.textContent = wearEv && wearEv.wear ? "👗 Suggested Wear: " + wearEv.wear : "";
+        if(noOccasionEl) noOccasionEl.textContent = "";
+        if(upcomingEl) upcomingEl.textContent = "";
+      } else {
+        if(festivalEl) festivalEl.textContent = "";
+        if(suggestionEl) suggestionEl.textContent = "";
+        if(noOccasionEl) noOccasionEl.textContent = "No special occasion today.";
+    
+        const next = getNextFestivalEntry(entries);
+        if(next){
+          const today = normalizeDate(new Date());
+          const diffDays = Math.ceil((normalizeDate(next.date) - today) / (1000*60*60*24));
+          const nextNames = next.events.map(e => e.name).join(", ");
+          if(upcomingEl) upcomingEl.textContent = `🔔 Upcoming: ${nextNames} on ${next.date.toDateString()} (${diffDays} days left)`;
+        } else {
+          if(upcomingEl) upcomingEl.textContent = "";
+        }
+      }
+    }
+    
+    // run
+    window.addEventListener("DOMContentLoaded", displayGreetingAndFestival);
+
+
+
+
+
+
+// ✅ Function to fetch from Google Calendar
+async function fetchFestivalEvents(year, month) {
+  try {
+    const startDate = new Date(year, month - 1, 1).toISOString();
+    const endDate = new Date(year, month, 0).toISOString();
+
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${startDate}&timeMax=${endDate}&singleEvents=true&orderBy=startTime`;
+    const response = await fetch(url);
+
+    if (!response.ok) throw new Error("API error");
+    const data = await response.json();
+
+    return data.items.map(event => ({
+      name: event.summary,
+      date: event.start.date || event.start.dateTime,
+      wear: getDressCode(event.summary)
+    }));
+  } catch (err) {
+    console.warn("API failed, using local fallback.", err);
+    return (localFestivals[year] || []).filter(ev => {
+      const evDate = new Date(ev.date);
+      return evDate.getMonth() + 1 === month;
+    });
+  }
+}
+
+// ✅ Dress code rules
+function getDressCode(eventName) {
+  const dressRules = {
+    "Pratipada": "Yellow/Traditional",
+    "Dwitiya": "Green/Traditional",
+    "Tritiya": "Grey/Traditional",
+    "Chaturthi": "Orange/Traditional",
+    "Panchami": "White/Traditional",
+    "Shashti": "Red/Traditional",
+    "Saptami": "Blue/Traditional",
+    "Ashtami": "Pink/Traditional",
+    "Navami": "Purple/Traditional",
+    "Dashami": "Red-Orange/Traditional",
+    "Dussehra": "Festive"
+  };
+  for (let key in dressRules) {
+    if (eventName.includes(key)) return dressRules[key];
+  }
+  return "Traditional"; // default
+}
+
+// ✅ Main loader
+async function loadFestivalCalendar() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+
+  const events = await fetchFestivalEvents(year, month);
+  const container = document.getElementById("festival-calendar");
+  if (!container) return; // prevent crash if element missing
+  container.innerHTML = "";
+
+  if (!events.length) {
+    container.innerHTML = "<p>No festivals this month.</p>";
+    return;
+  }
+
+  events.forEach(event => {
+    const div = document.createElement("div");
+    div.className = "event";
+    div.innerHTML = `<strong>${event.date}</strong> - ${event.name} - <em>${event.wear}</em>`;
+    container.appendChild(div);
+  });
+}
+
+// ✅ Auto run
+loadFestivalCalendar();
+
+
+
+
+
+
+
+
+    
+
+  (function(){
+    "use strict";
+  
+    const CONFIG = {
+      toggleSelector: '#toggleBtn, .toggle-btn',
+      knownSelectors: [
+        '#signupModal', '.signup-modal',
+        '#loginModal', '.login-modal',
+        '#weatherPage', '.weather-page', '.weather-modal', '.weather-conditions'
+      ],
+      debounceMs: 60,
+      debug: false
+    };
+  
+    function log(...a){ if (CONFIG.debug) console.log('[DarkToggleVisibility]', ...a); }
+  
+    function getToggles(){
+      return Array.from(document.querySelectorAll(CONFIG.toggleSelector));
+    }
+  
+    function isVisible(el){
+      if (!el || !(el instanceof Element)) return false;
+      if (el.hasAttribute('hidden')) return false;
+      if (el.getAttribute('aria-hidden') === 'true') return false;
+      const style = window.getComputedStyle(el);
+      if (!style) return false;
+      if (style.display === 'none' || style.visibility === 'hidden' || parseFloat(style.opacity) === 0) return false;
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0) return false;
+      if (el.getClientRects().length === 0) return false;
+      return true;
+    }
+  
+    function anyModalOpen(){
+      const candidates = new Set();
+      // known selectors
+      CONFIG.knownSelectors.forEach(sel => {
+        try { document.querySelectorAll(sel).forEach(e => candidates.add(e)); } catch(e){}
+      });
+      // semantic candidates
+      document.querySelectorAll('[data-modal], [role="dialog"], dialog[open]').forEach(e => candidates.add(e));
+  
+      for (const el of candidates) {
+        if (isVisible(el)) {
+          log('visible modal candidate:', el);
+          return true;
+        }
+      }
+      return false;
+    }
+  
+    function updateToggleVisibility(){
+      const shouldHide = anyModalOpen();
+      const toggles = getToggles();
+      if (!toggles.length) { log('no toggle elements found for selector:', CONFIG.toggleSelector); return; }
+  
+      toggles.forEach(el => {
+        try {
+          if (shouldHide) {
+            if (el.dataset.__dtv_hidden !== '1') {
+              el.dataset.__dtv_prevdisplay = el.style.display || '';
+              el.style.display = 'none';
+              el.dataset.__dtv_hidden = '1';
+              log('hid toggle', el);
+            }
+          } else {
+            if (el.dataset.__dtv_hidden === '1') {
+              el.style.display = el.dataset.__dtv_prevdisplay || '';
+              delete el.dataset.__dtv_prevdisplay;
+              delete el.dataset.__dtv_hidden;
+              log('restored toggle', el);
+            }
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    }
+  
+    let timer = null;
+    function scheduleUpdate(){
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { timer = null; updateToggleVisibility(); }, CONFIG.debounceMs);
+    }
+  
+    const observer = new MutationObserver(scheduleUpdate);
+    function startObserving(){
+      observer.observe(document.documentElement || document.body, {
+        childList: true, subtree: true, attributes: true,
+        attributeFilter: ['style', 'class', 'aria-hidden', 'hidden', 'open']
+      });
+      ['click','keydown','focus','resize'].forEach(evt => document.addEventListener(evt, scheduleUpdate, true));
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scheduleUpdate);
+      else scheduleUpdate();
+  
+      // public API
+      window.DarkToggleVisibility = {
+        forceUpdate() { scheduleUpdate(); },
+        addSelector(sel) { if (!CONFIG.knownSelectors.includes(sel)) CONFIG.knownSelectors.push(sel); scheduleUpdate(); },
+        setDebug(v){ CONFIG.debug = !!v; },
+        config: CONFIG
+      };
+    }
+  
+    startObserving();
+  })();
+  
+  
+  const toggleBtn = document.getElementById('toggleBtn');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY === 0) {
+      // Show button only at the very top
+      toggleBtn.classList.remove('hidden');
+    } else {
+      // Hide button if scrolled down even a little
+      toggleBtn.classList.add('hidden');
+    }
+  });
+    
+// =======================
+// Navbar Toggle + AI Color
+// =======================
+
+// Get elements
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+
+// Toggle navbar visibility
+hamburger.addEventListener('click', () => {
+  navLinks.classList.toggle('show');
+});
+
+// Close when clicking outside
+document.addEventListener('click', e => {
+  if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+    navLinks.classList.remove('show');
+  }
+});
+
+// -------------------------
+// Brightness Detection Logic
+// -------------------------
+
+// Compute brightness from CSS color
+function getBrightness(color) {
+  let r, g, b;
+  if (color.startsWith("rgb")) {
+    const values = color.match(/\d+/g).map(Number);
+    [r, g, b] = values;
+  } else if (color.startsWith("#")) {
+    const bigint = parseInt(color.slice(1), 16);
+    r = (bigint >> 16) & 255;
+    g = (bigint >> 8) & 255;
+    b = bigint & 255;
+  } else {
+    return 255; // assume white
+  }
+  return (0.299 * r + 0.587 * g + 0.114 * b);
+}
+
+// Update hamburger line color based on background
+function updateHamburgerAI() {
+  const bgColor = getComputedStyle(document.body).backgroundColor;
+  const brightness = getBrightness(bgColor);
+  const lines = hamburger.querySelectorAll("div"); // your structure
+
+  if (brightness < 128) {
+    lines.forEach(line => line.style.background = "white"); // dark bg → white lines
+  } else {
+    lines.forEach(line => line.style.background = "black"); // light bg → black lines
+  }
+}
+
+// -------------------------
+// Run + Auto Update
+// -------------------------
+
+// Initial check
+updateHamburgerAI();
+
+// Keep checking every second
+setInterval(updateHamburgerAI, 1000);
+
+// React to body style/class changes
+const observer = new MutationObserver(updateHamburgerAI);
+observer.observe(document.body, { attributes: true, attributeFilter: ["style", "class"] });
+
+// --- Persistent Data Setup ---
+let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
+
+// Modals
+const signupModal = document.getElementById('signupModal');
+const loginModal = document.getElementById('loginModal');
+document.getElementById('openSignUp').addEventListener('click', () => signupModal.style.display='flex');
+document.getElementById('openLogin').addEventListener('click', () => loginModal.style.display='flex');
+document.getElementById('closeSignUp').addEventListener('click', () => signupModal.style.display='none');
+document.getElementById('closeLogin').addEventListener('click', () => loginModal.style.display='none');
+window.addEventListener('click', e => { 
+  if(e.target===signupModal) signupModal.style.display='none'; 
+  if(e.target===loginModal) loginModal.style.display='none'; 
+});
+document.getElementById('switchToLogin').addEventListener('click', () => { 
+  signupModal.style.display='none'; 
+  loginModal.style.display='flex'; 
+  document.getElementById('loginEmail').value=document.getElementById('email').value; 
+});
+
+// Sign-Up
+document.getElementById('signupForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  ['nameError','emailError','passwordError','confirmPasswordError','signupSuccess']
+    .forEach(id=>document.getElementById(id).textContent='');
+
+  const name=document.getElementById('name').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const confirmPassword=document.getElementById('confirmPassword').value;
+  let valid=true;
+
+  if(name===''){document.getElementById('nameError').textContent='Name required'; valid=false;}
+  if(!/^[^ ]+@[^ ]+\.[a-z]{2,3}$/.test(email)){document.getElementById('emailError').textContent='Invalid email'; valid=false;}
+  if(password.length<6){document.getElementById('passwordError').textContent='Password min 6 chars'; valid=false;}
+  if(password!==confirmPassword){document.getElementById('confirmPasswordError').textContent='Passwords do not match'; valid=false;}
+
+  if(valid){
+    if(users.find(u=>u.email===email)){
+      document.getElementById('signupSuccess').textContent='Email already exists'; 
+      return;
+    }
+    users.push({name,email,password});
+    localStorage.setItem("users", JSON.stringify(users)); // save users permanently
+
+    document.getElementById('signupSuccess').textContent='Sign up successful! Redirecting to login...';
+    this.reset();
+    setTimeout(()=>{
+      signupModal.style.display='none'; 
+      loginModal.style.display='flex'; 
+      document.getElementById('loginEmail').value=email;
+    },1000);
+  }
+});
+
+// Login
+let weatherPage=document.getElementById('weatherPage');
+const apiKey="cea950af890c4ecc98e85419251207";
+let weatherLinkAdded=false;
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  ['loginEmailError','loginPasswordError','loginSuccess']
+    .forEach(id=>document.getElementById(id).textContent='');
+
+  const email=document.getElementById('loginEmail').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  let valid=true;
+
+  if(!/^[^ ]+@[^ ]+\.[a-z]{2,3}$/.test(email)){document.getElementById('loginEmailError').textContent='Invalid email'; valid=false;}
+  if(password===''){document.getElementById('loginPasswordError').textContent='Password required'; valid=false;}
+
+  if(valid){
+    const user=users.find(u=>u.email===email&&u.password===password);
+    if(user){
+      document.getElementById('loginSuccess').textContent='Login successful!';
+      setTimeout(()=>{
+        loginModal.style.display='none';
+        localStorage.setItem("currentUser", JSON.stringify(user)); // save logged-in user
+
+        if(!weatherLinkAdded){
+          const li=document.createElement('li');
+          li.textContent='Weather Conditions';
+          li.id='weatherLink';
+          navLinks.appendChild(li);
+          weatherLinkAdded=true;
+          document.getElementById('weatherLink')
+            .addEventListener('click',()=>{weatherPage.style.display='flex'; detectLocationPage();});
+        }
+      },1000);
+    } else {
+      document.getElementById('loginSuccess').textContent='Email or password incorrect';
+    }
+  }
+});
+
+  function updateBar(barId, valueId, value, maxValue) {
+    const bar = document.getElementById(barId);
+    const valueLabel = document.getElementById(valueId);
+  
+    const percentage = Math.min((value / maxValue) * 100, 100);
+  
+    bar.style.width = percentage + "%";
+    bar.textContent = value; // number inside bar
+    if (valueLabel) valueLabel.textContent = value; // number outside bar
+  }
+  
+  // ✅ Update the dashboard with real API data
+  function updateWeatherDashboard(data) {
+    // Adjust these based on your API’s JSON response structure
+    const aqi = data.aqi ?? 0;                           // Air Quality
+    const pressure = data.main?.pressure ?? 0;           // hPa
+    const visibility = (data.visibility ?? 0) / 1000;    // meters → km
+    const uv = data.current?.uvi ?? 0;                   // UV Index (if provided)
+  
+    // Update each bar with real values
+    updateBar("aqi-bar-page", "aqi-value-page", aqi, 500);
+    updateBar("pressure-bar-page", "pressure-value-page", pressure, 1100);
+    updateBar("visibility-bar-page", "visibility-value-page", visibility, 20);
+    updateBar("uv-bar-page", "uv-value-page", uv, 15);
+  }
+  
+  // ✅ Example integration with your fetch
+  function fetchWeather(city) {
+    
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=YOUR_KEY&units=metric`)
+
+      .then(res => res.json())
+      .then(data => {
+        console.log("Weather Data:", data); // debug
+        updateWeatherDashboard(data); // send data to bars
+      })
+      .catch(err => console.error(err));
+  }
+  
+  // Example: run when search button clicked
+  document.getElementById("searchBtnPage").addEventListener("click", () => {
+    const city = document.getElementById("searchInputPage").value;
+    if (city) fetchWeather(city);
+  });
+
+// --- Auto Login on Page Load ---
+window.addEventListener("load", () => {
+  if(currentUser){
+    loginModal.style.display='none';
+    signupModal.style.display='none';
+
+    if(!weatherLinkAdded){
+      const li=document.createElement('li');
+      li.textContent='Weather Conditions';
+      li.id='weatherLink';
+      navLinks.appendChild(li);
+      weatherLinkAdded=true;
+      document.getElementById('weatherLink')
+        .addEventListener('click',()=>{weatherPage.style.display='flex'; detectLocationPage();});
+    }
+  }
+});
+
+(function() {
+  const body = document.body;
+
+  // --- Load saved theme or system preference ---
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    body.classList.add(savedTheme);
+  } else {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      body.classList.add("dark");
+    } else {
+      body.classList.add("light");
+    }
+  }
+
+  // --- Theme toggle (works anywhere you place .dark-mode-toggle) ---
+  const toggleBtn = document.querySelector(".dark-mode-toggle");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      if (body.classList.contains("dark")) {
+        body.classList.remove("dark");
+        body.classList.add("light");
+        localStorage.setItem("theme", "light");
+      } else {
+        body.classList.remove("light");
+        body.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      }
+    });
+  }
+
+  // --- Auto-update if system theme changes ---
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", e => {
+      if (!localStorage.getItem("theme")) {  // only if user hasn’t set manually
+        body.classList.remove("dark", "light");
+        body.classList.add(e.matches ? "dark" : "light");
+      }
+    });
+  }
+})();
+
+// ✅ Register Service Worker for background alerts
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .then(() => console.log("Service Worker registered"))
+    .catch(err => console.error("SW registration failed:", err));
+}
+
+// ✅ Ensure API key exists
+
+const CITY = "Delhi"; // You can change this
+
+fetch(`https://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(CITY)}&aqi=no`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Weather API error: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    const location = data.location.name;
+    const region = data.location.region;
+    const country = data.location.country;
+    const tempC = data.current.temp_c;
+    const feelsLike = data.current.feelslike_c;
+    const condition = data.current.condition.text;
+    const humidity = data.current.humidity;
+
+    console.log(`Location: ${location}, ${region}, ${country}`);
+    console.log(`Temperature: ${tempC}°C (Feels like: ${feelsLike}°C)`);
+    console.log(`Condition: ${condition}`);
+    console.log(`Humidity: ${humidity}%`);
+
+    // Example: update HTML
+    // document.getElementById("weather").innerText = `${location}: ${tempC}°C, ${condition}`;
+  })
+  .catch(error => {
+    console.error("Failed to fetch weather:", error);
+  });
+
+
+let alertsEnabled = localStorage.getItem("alertsEnabled") === "true"; // persist state
+let weatherCheckInterval = null;
+let lastCondition = null; // to avoid repeated alerts
+
+const WEATHER_API_KEY_ALERTS = "cae4d08452074b1483844427250807"; // ✅ your WeatherAPI key
+const btn = document.getElementById("toggleAlerts");
+
+// 🔹 Ask for notification permission immediately when page loads
+document.addEventListener("DOMContentLoaded", () => {
+  if (Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+
+  // Restore previous state if user had enabled alerts
+  if (alertsEnabled) {
+    btn.textContent = "Disable Alerts";
+    startWeatherAlerts(); // start alerts for current location
+  }
+});
+
+// Helper: format time in 12-hour AM/PM
+function formatTime12Hour(date) {
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 -> 12
+  const minutesStr = minutes < 10 ? "0" + minutes : minutes;
+  return `${hours}:${minutesStr} ${ampm}`;
+}
+
+// Global function: works for current location or any coordinates passed
+window.startWeatherAlerts = function(lat, lon) {
+  if (!lat || !lon) {
+    if (!navigator.geolocation) { alert("Geolocation not supported"); return; }
+    navigator.geolocation.getCurrentPosition(pos => {
+      startWeatherAlerts(pos.coords.latitude, pos.coords.longitude);
+    }, () => alert("Unable to retrieve location"));
+    return;
+  }
+
+  if (weatherCheckInterval) clearInterval(weatherCheckInterval);
+
+  function checkWeather() {
+    // ✅ use forecast.json (next hours)
+    fetch(`https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY_ALERTS}&q=${lat},${lon}&hours=6`)
+      .then(res => res.json())
+      .then(data => {
+        const currentCondition = data.current.condition.text.toLowerCase();
+
+        // check current condition
+        if (currentCondition !== lastCondition) {
+          lastCondition = currentCondition;
+          checkWeatherAlerts(currentCondition);
+        }
+
+        // check upcoming hourly forecast
+        const hours = data.forecast.forecastday[0].hour;
+        const now = new Date();
+
+        for (let hour of hours) {
+          const time = new Date(hour.time);
+          if (time > now) {
+            const cond = hour.condition.text.toLowerCase();
+            if (cond.includes("rain") || cond.includes("thunder")) {
+              const localTime = formatTime12Hour(time); // 12-hour format
+              showAlert("⏰ Upcoming Rain", `Rain expected around ${localTime} in your location.`);
+              break; // only alert next event
+            }
+          }
+        }
+      })
+      .catch(err => console.error("Weather API error:", err));
+  }
+
+  checkWeather();
+  weatherCheckInterval = setInterval(checkWeather, 120000); // every 2 minutes
+};
+
+// Check weather and show notifications
+function checkWeatherAlerts(condition) {
+  if (!alertsEnabled) return;
+
+  if (condition.includes("rain") || condition.includes("drizzle"))
+    showAlert("☔ Rain Alert", "It's raining. Take an umbrella!");
+  else if (condition.includes("thunder"))
+    showAlert("⚡ Thunderstorm Alert", "Thunderstorm in progress. Stay safe indoors!");
+  else if (condition.includes("snow"))
+    showAlert("❄️ Snow Alert", "Snowfall expected. Dress warmly!");
+}
+
+function showAlert(title, message) {
+  // Show normal notification (foreground)
+  if (Notification.permission === "granted") {
+    new Notification(title, { body: message });
+  }
+
+  // Also use Service Worker (for Android background)
+  if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+    navigator.serviceWorker.ready.then(registration => {
+      registration.showNotification(title, {
+        body: message,
+        icon: "/weather-icon.png",  // must exist in your project root
+        vibrate: [200, 100, 200],
+        requireInteraction: true
+      });
+    });
+  }
+
+  // Optional: Voice alert (only works foreground)
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+// Toggle button
+btn.addEventListener("click", () => {
+  if (!alertsEnabled) {
+    if (Notification.permission === "granted") {
+      alertsEnabled = true;
+      localStorage.setItem("alertsEnabled", "true"); // persist
+      btn.textContent = "Disable Alerts"; 
+      new Notification("✅ Alerts enabled", { body: "You will get notifications when hazardous weather occurs." });
+      startWeatherAlerts(); // start alerts for current location
+    } else {
+      alert("You need to allow notifications in your browser settings.");
+    }
+  } else {
+    alertsEnabled = false;
+    localStorage.setItem("alertsEnabled", "false"); // persist
+    btn.textContent = "Enable Alerts";
+    clearInterval(weatherCheckInterval);
+    new Notification("❌ Alerts disabled", { body: "You will no longer receive weather alerts." });
+  }
+});
+
+// 🔹 Integration hint for other code:
+// window.startWeatherAlerts(searchedLat, searchedLon);
+
+// Forgot Password OTP
+document.getElementById('forgotPassword').addEventListener('click', function(e){
+e.preventDefault();
+const email=prompt('Enter your registered email:');
+if(!email||!/^[^ ]+@[^ ]+\.[a-z]{2,3}$/.test(email)){alert('Invalid email'); return;}
+const user=users.find(u=>u.email===email);
+if(!user){alert('Email not registered'); return;}
+const otp=Math.floor(100000+Math.random()*900000);
+const enteredOtp=prompt(`Your OTP is: ${otp}\nEnter OTP to reset password:`);
+if(enteredOtp==otp){
+  const newPassword=prompt('OTP verified! Enter new password (min 6 chars):');
+  if(newPassword&&newPassword.length>=6){user.password=newPassword; alert('Password reset successful!');}
+  else alert('Password too short');
+} else alert('Wrong OTP!');
+});
+
+// Animate numbers
+function animateValuePage(element,start,end,duration){
+let startTimestamp=null;
+const step=timestamp=>{
+  if(!startTimestamp) startTimestamp=timestamp;
+  const progress=Math.min((timestamp-startTimestamp)/duration,1);
+  element.innerText=Math.round(progress*(end-start)+start);
+  if(progress<1) window.requestAnimationFrame(step);
+};
+window.requestAnimationFrame(step);
+}
+
+// Update dashboard
+async function updateDashboardPage(location){
+try{
+  let query=location;
+  if(typeof location==='object'&&location.lat&&location.lon) query=`${location.lat},${location.lon}`;
+  const res=await fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${query}&aqi=yes`);
+  const data=await res.json();
+  if(data.error){alert("Location not found"); return;}
+  const metrics={
+    aqi:{value:data.current.air_quality.pm2_5,max:150,color:v=>v<=50?'#4CAF50':v<=100?'#FFC107':'#F44336',unit:'μg/m³'},
+    pressure:{value:data.current.pressure_mb,max:1050,min:950,color:v=>v<1000?'#FFC107':'#4CAF50',unit:'hPa'},
+    visibility:{value:data.current.vis_km,max:20,color:v=>v>=10?'#4CAF50':v>=5?'#FFC107':'#F44336',unit:'km'},
+    uv:{value:data.current.uv,max:11,color:v=>v<=2?'#4CAF50':v<=5?'#FFC107':'#F44336',unit:''}
+  };
+  Object.keys(metrics).forEach(key=>{
+    const metric=metrics[key];
+    const bar=document.getElementById(`${key}-bar-page`);
+    const valueLabel=document.getElementById(`${key}-value-page`);
+    let percent;
+    if(key==='pressure') percent=((metric.value-metric.min)/(metric.max-metric.min))*100;
+    else percent=(metric.value/metric.max)*100;
+    percent=Math.min(percent,100);
+    bar.style.width=`${percent}%`;
+    bar.style.backgroundColor=metric.color(metric.value);
+    animateValuePage(valueLabel, 0, Math.round(metric.value), 1500);
+    valueLabel.innerText=`Value: ${metric.value} ${metric.unit}`;
+  });
+} catch(err){
+  console.error(err);
+  alert("API error or invalid location");
+}
+}
+
+// Detect user location
+function detectLocationPage(){
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(position=>{
+    const coords={lat:position.coords.latitude, lon:position.coords.longitude};
+    updateDashboardPage(coords);
+  }, ()=>{
+    updateDashboardPage("Delhi, India"); // fallback location
+  });
+} else {
+  updateDashboardPage("Delhi, India"); // fallback location
+}
+}
+
+// Search functionality
+document.getElementById('searchBtnPage').addEventListener('click', ()=>{
+const inputCity=document.getElementById('searchInputPage').value.trim();
+if(inputCity){
+  updateDashboardPage(inputCity);
+}
+});
+
+// Close weather overlay
+document.getElementById('closeWeather').addEventListener('click', ()=>{
+weatherPage.style.display='none';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const apiKey = "4c5639d6e4d04ed9960175850251007";
+    const background = document.getElementById("background");
+    const $ = id => document.getElementById(id);
+    let energySaver = false;
+    let lastWeather = null;
+
+   
+    $("darkToggle").addEventListener("click", () => { document.body.classList.toggle("dark"); document.body.classList.toggle("light"); });
+    $("btnSearch").addEventListener("click", () => { const city = $("cityInput").value.trim(); if (!city) return alert("Please enter a location"); fetchWeather(city); updateRadarFromCity(city); });
+    $("btnLocate").addEventListener("click", getWeatherByLocation);
+    $("btnEnergy").addEventListener("click", toggleEnergySaver);
+    $("btnWallpaper").addEventListener("click", generateWallpaper);
+
+    function clearBackground(){ background.className = "background"; background.innerHTML = ""; }
+
+    function getSkyGradient(hour) {
+      if (hour >= 5 && hour < 7)  return "linear-gradient(to top, #ff9966, #ff5e62)";
+      if (hour >= 7 && hour < 18) return "linear-gradient(to top, #87ceeb, #fffde4)";
+      if (hour >= 18 && hour < 20) return "linear-gradient(to top, #fbc2eb, #a6c1ee)";
+      return "linear-gradient(to top, #0f2027, #203a43, #2c5364)";
+    }
+    function addRain(){ if (energySaver) return; for (let i=0;i<60;i++){ const d=document.createElement("div"); d.className="raindrop"; d.style.left=`${Math.random()*100}vw`; d.style.animationDuration=`${0.6+Math.random()*0.5}s`; background.appendChild(d);} }
+    function addLightning(){ if (energySaver) return; let c=0; const max=6; (function flash(){ if(c>=max) return; const f=document.createElement("div"); f.className="lightning"; background.appendChild(f); setTimeout(()=>f.remove(),300); c++; setTimeout(flash,Math.random()*3000+1000);} )(); }
+    function addSnow(){ if (energySaver) return; for (let i=0;i<50;i++){ const s=document.createElement("div"); s.className="snowflake"; s.textContent="❄"; s.style.left=`${Math.random()*100}vw`; s.style.animationDuration=`${5+Math.random()*5}s`; s.style.animationDelay=`${Math.random()*5}s`; background.appendChild(s);} }
+
+    function setBackground(conditionText, code, isRainingNow=false){
+      clearBackground();
+      const thunder=[1087,1273,1276,1279,1282];
+      const rain=[1063,1150,1153,1180,1183,1186,1189,1192,1195,1204,1207,1240,1243,1246];
+      const fog=[1030,1135,1147];
+      const cloudy=[1003,1006,1009];
+      const snow=[1114,1117,1210,1213,1216,1219,1222,1225,1255,1258,1279,1282];
+
+      if (thunder.includes(code)) { background.classList.add("thunderstorm"); addRain(); addLightning(); }
+      else if (rain.includes(code)) { isRainingNow ? (background.classList.add("rain"), addRain()) : background.classList.add("cloudy"); }
+      else if (snow.includes(code)) { background.classList.add("cloudy"); addSnow(); }
+      else if (fog.includes(code))  { background.classList.add("cloudy"); }
+      else if (cloudy.includes(code)) { background.classList.add("cloudy"); }
+      else { background.classList.add("sunny"); }
+
+      
+      function setBackground(conditionText, code){
+clearBackground();
+
+const thunder=[1087,1273,1276,1279,1282];
+const rain=[1063,1150,1153,1180,1183,1186,1189,1192,1195,1204,1207,1240,1243,1246];
+const fog=[1030,1135,1147];
+const cloudy=[1003,1006,1009];
+const snow=[1114,1117,1210,1213,1216,1219,1222,1225,1255,1258,1279,1282];
+
+if (thunder.includes(code)) { 
+  background.classList.add("thunderstorm"); 
+  addRain(); 
+  addLightning(); 
+}
+else if (rain.includes(code)) { 
+  background.classList.add("rain"); 
+  addRain(); 
+}
+else if (snow.includes(code)) { 
+  background.classList.add("snowy"); 
+  addSnow(); 
+}
+else if (fog.includes(code))  { 
+  background.classList.add("foggy"); 
+}
+else if (cloudy.includes(code)) { 
+  background.classList.add("cloudy"); 
+}
+else { 
+  background.classList.add("sunny"); 
+  background.style.background = getSkyGradient(new Date().getHours());
+}
+}
+      
+    }
+
+    function suggestActivity(temp, conditionText){
+      const t=Number(temp); const c=(conditionText||"").toLowerCase();
+      if (t > 35) return "☀ Very hot! Stay hydrated and avoid peak sun.";
+      if (c.includes("thunder")) return "☔ Thunderstorms around — stay indoors.";
+      if (c.includes("rain")) return "🚪 Cozy indoor time (book/movie).";
+      if (c.includes("snow")) return "❄️ Warm drinks & indoor fun!";
+      if (c.includes("clear") || c.includes("sunny")) return "🚲 Great for a walk or cycling!";
+      return "😌 Easy day — do your favorite activity!";
+    }
+    function suggestClothing(temp, isRaining){
+      const t=Number(temp);
+      if (t < 10) return "👕 Heavy jacket, gloves & warm layers.";
+      if (t < 20) return "👕 Light sweater or jacket.";
+      if (t > 32) return "👕 Breathable cotton, hat & sunglasses.";
+      if (isRaining) return "☔ Carry an umbrella or raincoat.";
+      return "👕 Dress comfortably for the weather.";
+    }
+
+    function toggleEnergySaver(){
+      energySaver = !energySaver;
+      const status = $("energyStatus");
+      if (energySaver){
+        document.body.classList.add("energy-saver");
+
+        document.body.classList.add("energy-saver");
+        clearBackground();
+        status.textContent = "Energy Saver ON";
+      } else {
+        document.body.classList.remove("energy-saver");
+        status.textContent = "Normal mode";
+        if (lastWeather){
+          const { conditionText, conditionCode, isRainingNow } = lastWeather;
+          setBackground(conditionText, conditionCode, isRainingNow);
+        }
+      }
+    }
+
+    function generateWallpaper(){
+      if (!window.html2canvas){ alert("Wallpaper library not loaded yet. Try again in a moment."); return; }
+      html2canvas(document.querySelector(".background")).then(canvas=>{
+        const link=document.createElement("a");
+        link.download="weather_wallpaper.png";
+        link.href=canvas.toDataURL();
+        link.click();
+      });
+    }
+
+// Voice alert helper
+function speak(message) {
+  if ('speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance(message);
+    utter.lang = "en-US";
+    utter.rate = 1;
+    utter.pitch = 1;
+    speechSynthesis.speak(utter);
+  }
+}
+
+    async function fetchWeather(query){
+      const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${encodeURIComponent(query)}&days=5&aqi=no&alerts=yes`;
+      try{
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data || !data.location) throw new Error("No data / invalid response");
+
+        const { current, location, forecast } = data;
+        const isRainingNow = Number(current.precip_mm) > 0;
+        const conditionText = current?.condition?.text || "Clear";
+        const conditionCode = current?.condition?.code || 1000;
+
+        lastWeather = { conditionText, conditionCode, isRainingNow };
+        setBackground(conditionText, conditionCode, isRainingNow);
+
+        $("currentWeather").innerHTML = `
+          <h2>${location.name}, ${location.region || ""} ${location.country}</h2>
+          <p><strong>🔥°C Temp:</strong> ${current.temp_c} °C | Feels like: ${current.feelslike_c} °C</p>
+          <p><strong>📑Condition:</strong> ${conditionText} <img alt="" src="https:${current.condition.icon}"/></p>
+          <p><strong>💧 Humidity:</strong> ${current.humidity}%</p>
+          <p><strong>💨 Wind:</strong> ${current.wind_kph} km/h</p>
+          <p><strong>⏰ Local Time:</strong> <span id="liveClock">Loading...</span></p>
+        `;
+
+        $("moodText").textContent = suggestActivity(current.temp_c, conditionText);
+        $("clothingText").textContent = suggestClothing(current.temp_c, isRainingNow);
+
+        let fHtml = "<h3>📅 3-Day Forecast</h3>";
+        (forecast?.forecastday || []).forEach(d=>{
+          fHtml += `
+            <p><strong>${d.date}</strong></p>
+            <p>🔥°C ${d.day.maxtemp_c}°C / ${d.day.mintemp_c}°C</p>
+            <p>☔︎︎${d.day.daily_chance_of_rain}% Rain Chance</p>
+            <p>${d.day.condition.text} <img alt="" src="https:${d.day.condition.icon}"/></p>
+            <hr/>
+          `;
+        });
+        $("forecast").innerHTML = fHtml;
+
+        const now = new Date(); const h = now.getHours();
+        const today = (forecast?.forecastday?.[0]?.hour || []).filter(x => new Date(x.time).getHours() >= h);
+        $("hourlyForecast").innerHTML = today.map(x=>{
+          const t = new Date(x.time).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:true});
+          return `<div class="hour-card">
+                    <p>${t}</p>
+                    <img alt="" src="https:${x.condition.icon}"/>
+                    <p>${x.temp_c}°C</p>
+                    <p>${x.condition.text}</p>
+                  </div>`;
+        }).join("");
+
+        updateSunWidget(location.name, forecast.forecastday[0].astro.sunrise, forecast.forecastday[0].astro.sunset);
+      } catch(err){
+        console.error("Weather error:", err);
+        $("currentWeather").innerHTML = "❌ Error fetching data. Try another city or check API key.";
+        $("forecast").innerHTML = "";
+        $("hourlyForecast").innerHTML = "";
+      }
+    }
+
+    function updateSunWidget(city, sunriseStr, sunsetStr){
+      $("location").textContent = `📍 ${city}`;
+      function toDateTime(str){
+        const [time,mod] = str.split(" ");
+        let [h,m] = time.split(":"); h = parseInt(h,10);
+        if (mod === "PM" && h !== 12) h += 12;
+        if (mod === "AM" && h === 12) h = 0;
+        const d = new Date(); d.setHours(h, m, 0, 0); return d;
+      }
+      const sunrise = toDateTime(sunriseStr), sunset = toDateTime(sunsetStr), now = new Date();
+      const isNight = now < sunrise || now > sunset;
+      const iconRow = $("icon-row"), timeRow = $("time-row");
+      if (isNight) {
+        iconRow.innerHTML = `<div><div class="emoji">🌇</div><div>Sunset</div></div>
+                             <div><div class="emoji">🌅</div><div>Sunrise</div></div>`;
+        timeRow.innerHTML = `<span>${sunsetStr}</span><span>${sunriseStr}</span>`;
+      } else {
+        iconRow.innerHTML = `<div><div class="emoji">🌅</div><div>Sunrise</div></div>
+                             <div><div class="emoji">🌇</div><div>Sunset</div></div>`;
+        timeRow.innerHTML = `<span>${sunriseStr}</span><span>${sunsetStr}</span>`;
+      }
+
+      let total, elapsed;
+      if (isNight) {
+        if (sunrise < sunset) sunrise.setDate(sunrise.getDate() + 1);
+        total = sunrise - sunset;
+        elapsed = now - sunset;
+      } else {
+        total = sunset - sunrise;
+        elapsed = now - sunrise;
+      }
+
+      const progress = Math.max(0, Math.min(1, elapsed / total));
+      const bar = $("bar");
+      $("moon").style.left = `${progress * (bar.offsetWidth - 28)}px`;
+      $("fill").style.width = `${progress * 100}%`;
+      $("progress").textContent = `${isNight ? "🌙 Night" : "☀️ Day"} progress: ${Math.round(progress * 100)}%`;
+    }
+
+    function getWeatherByLocation(){
+      if (!navigator.geolocation){
+        $("currentWeather").textContent = "❌ Geolocation not supported by your browser.";
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          fetchWeather(`${coords.latitude},${coords.longitude}`);
+          updateRadar(coords.latitude, coords.longitude);
+        },
+        (err) => {
+          console.warn("Geolocation denied:", err);
+          $("currentWeather").textContent = "❌ Location access denied. Search a city manually.";
+        }
+      );
+    }
+
+    function updateRadar(lat, lon){
+      $("radarMap").src = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=7&overlay=rain`;
+    }
+
+    async function updateRadarFromCity(city) {
+  try {
+      // Try Nominatim first
+      let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`);
+      let data = await res.json();
+
+      if (!data || data.length === 0) {
+          // Fallback: use WeatherAPI
+          console.warn("Nominatim failed, using WeatherAPI coordinates...");
+          const weatherRes = await fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(city)}`);
+          const weatherData = await weatherRes.json();
+          if (weatherData && weatherData.location) {
+              const { lat, lon } = weatherData.location;
+              $("radarMap").src = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=7&overlay=rain`;
+              return;
+          } else {
+              console.error("WeatherAPI fallback failed");
+              return;
+          }
+      }
+
+      // Nominatim worked
+      const { lat, lon } = data[0];
+      $("radarMap").src = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=7&overlay=rain`;
+
+  } catch(err) {
+      console.error("Radar error:", err);
+  }
+}
+
+    function updateLiveClock(){
+      const now = new Date();
+      const t = now.toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true});
+      const liveClockElem = $("liveClock");
+      if (liveClockElem) liveClockElem.innerText = t;
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    getWeatherByLocation();
+  });
+
+  // ---------- STATE HELPERS ----------
+function saveState(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+function loadState(key, defaultValue = null) {
+  let v = localStorage.getItem(key);
+  return v ? JSON.parse(v) : defaultValue;
+}
+
+// ---------- USERS ----------
+let users = loadState("users", []);
+function saveUsers() { saveState("users", users); }
+
+// ---------- LOGIN ----------
+function setLogin(username) {
+  saveState("isLoggedIn", true);
+  saveState("username", username);
+  document.getElementById("status").innerText = "Welcome, " + username;
+  showWeatherSection();
+}
+function clearLogin() {
+  saveState("isLoggedIn", false);
+  saveState("username", "");
+  document.getElementById("status").innerText = "Please log in";
+  hideWeatherSection();
+}
+
+// ---------- WEATHER SECTION ----------
+function showWeatherSection() {
+  const sec = document.getElementById("weatherSection");
+  if (sec) sec.style.display = "block";
+  saveState("weatherVisible", true);
+  loadWeather(); // fetch weather when showing
+}
+function hideWeatherSection() {
+  const sec = document.getElementById("weatherSection");
+  if (sec) sec.style.display = "none";
+  saveState("weatherVisible", false);
+}
+
+// ---------- ALERTS ----------
+function toggleAlerts() {
+  let enabled = loadState("alertsEnabled", false);
+  enabled = !enabled;
+  saveState("alertsEnabled", enabled);
+  document.getElementById("alerts").innerText = enabled ? "Alerts Enabled ✅" : "Alerts Disabled ❌";
+}
+
+// ---------- WEATHER API ----------
+async function loadWeather() {
+  const apiKey = "7092e8e89e8462f423522faaa74596b3"; // your API key
+  try {
+    let res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}&units=metric`);
+    let data = await res.json();
+    document.getElementById("weather").innerText =
+      `Weather: ${data.weather[0].description}, Temp: ${data.main.temp}°C`;
+  } catch (e) {
+    document.getElementById("weather").innerText = "⚠️ Weather unavailable";
+  }
+}
+
+// ---------- RESTORE ON PAGE LOAD ----------
+document.addEventListener("DOMContentLoaded", () => {
+  // Restore login
+  if (loadState("isLoggedIn", false)) {
+    let username = loadState("username", "User");
+    document.getElementById("status").innerText = "Welcome, " + username;
+    if (loadState("weatherVisible", false)) showWeatherSection();
+  } else {
+    hideWeatherSection();
+  }
+
+  // Restore alerts
+  let alertsEnabled = loadState("alertsEnabled", false);
+  document.getElementById("alerts").innerText = alertsEnabled ? "Alerts Enabled ✅" : "Alerts Disabled ❌";
+
+  // Restore last section (navbar)
+  let lastSection = loadState("lastSection", null);
+  if (lastSection) activateSection(lastSection);
+});
+
+// ---------- NAVBAR SECTIONS ----------
+function activateSection(id) {
+  document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+  const section = document.getElementById(id);
+  if (section) section.style.display = "block";
+  saveState("lastSection", id);
+}
+    
+
+// ---------- LOGIN / SIGNUP ----------
+function loginUser(username) {
+  let user = users.find(u => u.name === username);
+  if (user) {
+    setLogin(username);
+  } else {
+    alert("User not found, please sign up.");
+  }
+}
+
+function signupUser(username) {
+  if (!users.find(u => u.name === username)) {
+    users.push({ name: username });
+    saveUsers();
+    alert("Signup successful. Now log in.");
+  } else {
+    alert("User already exists.");
+  }
+}
+
+// ✅ Save state to localStorage
+function saveState() {
+  const state = {
+    loggedIn: localStorage.getItem("loggedIn") === "true",
+    weatherVisible: document.getElementById("weatherBox").style.display === "block",
+    alertsEnabled: localStorage.getItem("alertsEnabled") === "true"
+  };
+  localStorage.setItem("appState", JSON.stringify(state));
+}
+
+// ✅ Restore state from localStorage
+function restoreState() {
+  const saved = localStorage.getItem("appState");
+  if (saved) {
+    const state = JSON.parse(saved);
+
+    if (state.loggedIn) {
+      // If user was logged in → show weather
+      document.getElementById("weatherBox").style.display = "block";
+    }
+    if (state.weatherVisible) {
+      document.getElementById("weatherBox").style.display = "block";
+    }
+    if (state.alertsEnabled) {
+      enableAlerts(true); // restore alerts
+    }
+  }
+}
+
+// ✅ Login simulation (auto-unlock features)
+function loginUser() {
+  localStorage.setItem("loggedIn", "true");
+  document.getElementById("weatherBox").style.display = "block";
+  saveState();
+}
+
+// ✅ Enable alerts
+function enableAlerts(restore = false) {
+  if (!restore) {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        localStorage.setItem("alertsEnabled", "true");
+        alert("Weather alerts enabled ✅");
+        saveState();
+      }
+    });
+  } else {
+    // restoring alerts silently
+    console.log("Alerts restored");
+  }
+}
+
+// ✅ Track button clicks
+document.getElementById("openLogin").addEventListener("click", () => {
+  loginUser();
+});
+
+document.getElementById("enableAlerts").addEventListener("click", () => {
+  enableAlerts();
+});
+
+// ✅ Restore everything on page load
+restoreState();
+
+  fetch('/config')
+    .then(res => res.json())
+    .then(data => {
+      console.log("Weather API Key:", data.weatherApiKey);
+      // Use this key in your frontend API calls
+    });
+</script>
+</body>
+</html>
