@@ -276,16 +276,25 @@ body.light #weatherPage .progress-bar {
 .redirect-login a:hover{text-decoration:underline;}
 
 /* === Modal Base === */
+/* Weather Dashboard Fullscreen Overlay */
 #weatherPage {
   display: none;
   position: fixed;
-  top: -20; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;           
+  width: 100vw;         
+  height: 100vh;        
+  background: rgba(0, 0, 0, 0.5); 
+  backdrop-filter: blur(12px);     
+  -webkit-backdrop-filter: blur(12px); 
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
+
 
 #weatherPage .modal-content {
   width: 90%;
@@ -779,6 +788,52 @@ body.dark-mode .close-btn {
 
 
 
+
+
+
+
+
+
+
+
+
+/* Base mobile optimization */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Responsive typography */
+body {
+  font-size: clamp(14px, 2.5vw, 18px);
+  line-height: 1.5;
+}
+
+/* Dark/light theme variables */
+:root[data-theme='light'] {
+  --bg: #f5f5f5;
+  --text: #111;
+  --card: #fff;
+}
+:root[data-theme='dark'] {
+  --bg: #0b0f14;
+  --text: #e0e0e0;
+  --card: #1a1a1a;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.4s, color 0.4s;
+}
+
   </style>
 </head>
 <nav class="navbar">
@@ -974,10 +1029,7 @@ body.dark-mode .close-btn {
     </div>
     <div class="card">
       <h1 id="greeting">Loading...</h1>
-      <div id="festival"></div>
-      <div id="suggestion"></div>
-      <div id="noOccasion"></div>
-      <div id="upcoming"></div>
+    
     </div>
 
     <div class="section">
@@ -1000,11 +1052,147 @@ body.dark-mode .close-btn {
   });
   </script>
 
+
+  
+
+<script>
+// ===============================
+// MOBILE RESPONSIVENESS & APP-FEEL FIX
+// ===============================
+(function() {
+  // 1️⃣ Prevent zoom when user taps input fields
+  const meta = document.querySelector('meta[name=viewport]');
+  if (meta) meta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+
+  // 2️⃣ Adjust root font size dynamically
+  function adjustFont() {
+    const width = window.innerWidth;
+    document.documentElement.style.fontSize = Math.max(12, Math.min(18, width / 25)) + 'px';
+  }
+  adjustFont();
+  window.addEventListener('resize', adjustFont);
+
+  // 3️⃣ Smooth scroll & animation performance
+  document.documentElement.style.scrollBehavior = 'smooth';
+  document.body.style.webkitOverflowScrolling = 'touch';
+
+  // 4️⃣ Fix dark/light mode inconsistencies
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', prefersDark.matches ? 'dark' : 'light');
+  }
+  applyTheme();
+  prefersDark.addEventListener('change', applyTheme);
+
+  // 5️⃣ Make all clickable things feel responsive
+  document.querySelectorAll('button, a, input, textarea, .clickable').forEach(el => {
+    el.style.touchAction = 'manipulation';
+    el.style.transition = 'all 0.25s ease';
+  });
+
+  // 6️⃣ Fix viewport resize issues on mobile browsers
+  let lastHeight = window.innerHeight;
+  window.addEventListener('resize', () => {
+    if (Math.abs(window.innerHeight - lastHeight) > 150) return;
+    document.documentElement.style.height = window.innerHeight + 'px';
+    lastHeight = window.innerHeight;
+  });
+
+  // 7️⃣ Optional: Add app-like smooth entry animation
+  document.body.style.opacity = 0;
+  document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(() => {
+      document.body.style.transition = 'opacity 0.6s ease';
+      document.body.style.opacity = 1;
+    });
+  });
+})();
+</script>
+
+
 <!-- App script -->
 
 <script> 
 
- 
+ // --- Universal Scroll Lock ---
+let scrollLocked = false;
+
+function lockScroll() {
+  if (scrollLocked) return;
+  scrollLocked = true;
+
+  // Save current scroll position
+  document.body.dataset.scrollY = window.scrollY;
+
+  // Apply styles to lock scroll
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${window.scrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.width = '100%';
+}
+
+function unlockScroll() {
+  if (!scrollLocked) return;
+  scrollLocked = false;
+
+  // Restore scroll position
+  const scrollY = parseInt(document.body.dataset.scrollY || '0');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.width = '';
+  window.scrollTo(0, scrollY);
+}
+
+// --- Detect overlays automatically ---
+function initOverlayScrollLock() {
+  const overlays = document.querySelectorAll('.modal, .page');
+
+  overlays.forEach(overlay => {
+    const observer = new MutationObserver(() => {
+      const isVisible = overlay.style.display !== 'none' && overlay.style.display !== '';
+      if (isVisible) lockScroll();
+      else unlockScroll();
+    });
+
+    observer.observe(overlay, { attributes: true, attributeFilter: ['style'] });
+  });
+}
+
+// --- Optional: open/close functions ---
+function openOverlay(id) {
+  const overlay = document.getElementById(id);
+  if (!overlay) return;
+  overlay.style.display = 'flex'; // or 'block'
+}
+
+function closeOverlay(id) {
+  const overlay = document.getElementById(id);
+  if (!overlay) return;
+  overlay.style.display = 'none';
+}
+
+// --- Initialize scroll lock detection ---
+initOverlayScrollLock();
+
+// --- Close buttons for all overlays ---
+document.querySelectorAll('.modal .close, .page .close').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const overlay = btn.closest('.modal, .page');
+    if (overlay) closeOverlay(overlay.id);
+  });
+});
+
+
+
+
+
+
+
+
+
+
+  
    // ✅ Modal Functions
    function openAbout() {
     document.getElementById("aboutModal").style.display = "flex";
@@ -1037,19 +1225,20 @@ body.dark-mode .close-btn {
     }
   });
 
- /* Festival + Greeting app
+ /*   Greeting 
        - Primary source: Google Calendar REST v3 (public calendar via API key)
+
        - Fallback: Expanded local festival list (many religions / regions / jayantis / special days)
+
        - Also supports year-specific overrides for variable-date festivals (Navratri, Durga Puja, etc.)
+
        - Normalizes dates to local midnight (so "today" always matches)
+       
        - To keep things accurate each year: maintain a public Google Calendar with festival events (recommended).
     */
      
     // ---------------- CONFIG ----------------
     const WEATHER_API_KEY = "cae4d08452074b1483844427250807";
-    const API_KEY = "AIzaSyAlmZxuEBe26F5th6154IGz35EpHOc2TwU"; // your API key (public-calendar access only)
-    const CALENDAR_ID = "your_festival_calendar_id@group.calendar.google.com"; // set a public festival calendar id here
-
     const LOOKAHEAD_DAYS = 400; // how many days ahead to fetch/consider (covers next year)
     
     // ---------------- HELPERS ----------------
@@ -1060,364 +1249,22 @@ body.dark-mode .close-btn {
       if (hour < 21) return "Good Evening ";
       return "Good Night 🌙";
     }
-    function normalizeDate(d) {
-      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    }
-    function isoDateTimeAtStartOfDay(d) {
-      return normalizeDate(d).toISOString();
-    }
-    function addDays(date, days) {
-      const d = new Date(date);
-      d.setDate(d.getDate() + days);
-      return d;
-    }
-    function sameDay(a,b) { return normalizeDate(a).getTime() === normalizeDate(b).getTime(); }
     
-    // Easter (Western) for Christian movable dates
-    function getEasterDate(y){
-      const f = Math.floor,
-            G = y % 19,
-            C = f(y / 100),
-            H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
-            I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)),
-            J = (y + f(y / 4) + I + 2 - C + f(C / 4)) % 7,
-            L = I - J,
-            month = 3 + f((L + 40) / 44),
-            day = L + 28 - 31 * f(month / 4);
-      return new Date(y, month - 1, day);
-    }
-    
-    // ---------------- YEAR-SPECIFIC OVERRIDES ----------------
-    // Use this object to provide explicit dates for festivals that move each year.
-    // Format: { "2025": [{ name, date: "YYYY-MM-DD", wear }, ...], "2026": [...] }
-    const FESTIVAL_OVERRIDES = {
-      // I added the Navratri 2025 start example you mentioned (Sharad Navratri starting Sep 22, 2025).
-      // Add other year-specific dates here as needed (Durga Puja, Diwali, Eid, etc.)
-      "2025": [
-        { name: "Sharad Navratri Day 1 (Pratipada)", date: "2025-09-22", wear: "Yellow/Traditional" },
-        { name: "Sharad Navratri Day 2 (Dwitiya)", date: "2025-09-23", wear: "Green/Traditional" },
-        { name: "Sharad Navratri Day 3 (Tritiya)", date: "2025-09-24", wear: "Grey/Traditional" },
-        { name: "Sharad Navratri Day 4 (Chaturthi)", date: "2025-09-25", wear: "Orange/Traditional" },
-        { name: "Sharad Navratri Day 5 (Panchami)", date: "2025-09-26", wear: "White/Traditional" },
-        { name: "Sharad Navratri Day 6 (Shashti)", date: "2025-09-27", wear: "Red/Traditional" },
-        { name: "Sharad Navratri Day 7 (First Day Of Durga /festivities)", date: "2025-09-28", wear: "Blue/Traditional" },
-        { name: "Sharad Navratri Day 8 (Maha Saptami)", date: "2025-09-29", wear: "Pink/Traditional" },
-        { name: "Sharad Navratri Day 9 (Maha ashtami)", date: "2025-09-30", wear: "Purple/Traditional" },
-        { name: "Sharad Navratri Day 10 (Maha Navami)", date: "2025-10-01", wear: "Red-Orange/Traditional" },
-        { name: "Vijayadashami / Dussehra", date: "2025-10-02", wear: "Festive" },
-
-        // add Durga Puja / Kali Puja / Diwali exact 2025 dates here if desired
-      ],
-      // Add 2026, 2027 etc. when needed
-    };
-    
-    // Helper to expand overrides into event objects
-    function getOverridesForYear(year) {
-      const arr = FESTIVAL_OVERRIDES[String(year)] || [];
-      return arr.map(o => ({ name: o.name, date: new Date(o.date), wear: o.wear || "" }));
-    }
-    
-    // ---------------- LOCAL FALLBACK LIST (many festivals)
-    // This is an expanded local list for quick fallback if the remote calendar isn't set.
-    // NOTE: For festivals that move yearly (Navratri/Durga Puja/Eid/Diwali), use the calendar or overrides.
-    function getLocalFestivalList(year) {
-      const easter = getEasterDate(year);
-      const list = [
-        // --- National ---
-        { name: "New Year", date: new Date(year,0,1), wear:"Casual party wear 🎉" },
-        { name: "Republic Day", date: new Date(year,0,26), wear:"Tricolour attire 🇮🇳" },
-        { name: "Labour Day", date: new Date(year,4,1), wear:"Simple work attire 🛠️" },
-        { name: "Independence Day", date: new Date(year,7,15), wear:"White kurta/salwar with tricolour touch 🇮🇳" },
-        { name: "Gandhi Jayanti", date: new Date(year,9,2), wear:"White Khadi attire 🕊️" },
-    
-        // --- Hindu (many fixed/approx dates; movable ones should be in overrides or calendar) ---
-        { name:"Makar Sankranti", date:new Date(year,0,14), wear:"Bright ethnic wear 🪁" },
-        { name:"Pongal", date:new Date(year,0,15), wear:"South Indian traditional 🌾" },
-        { name:"Maha Shivratri", date:new Date(year,2,1), wear:"White/saffron 🕉️" },
-        { name:"Holi", date:new Date(year,2,14), wear:"White kurta for colours 🌈" },
-        { name:"Ram Navami", date:new Date(year,2,27), wear:"Yellow attire 🌞" },
-        { name:"Janmashtami", date:new Date(year,7,16), wear:"Yellow/Blue attire 🦚" },
-        { name:"Ganesh Chaturthi", date:new Date(year,8,7), wear:"Bright attire 🪔" },
-    
-        // --- Bengali / Kolkata ---
-        { name:"Pohela Boishakh (Bengali New Year)", date:new Date(year,3,14), wear:"Red & White attire 🎊" },
-        { name:"Saraswati Puja", date:new Date(year,0,26), wear:"Yellow attire 📚" },
-        { name:"Kali Puja", date:new Date(year,10,1), wear:"Black/Red attire 🕉️" },
-    
-        // --- Bihari ---
-        { name:"Chhath Puja", date:new Date(year,10,2), wear:"Traditional dhoti/saree 🌅" },
-        // (regional dates vary; use calendar for accuracy)
-    
-        // --- Muslim (use calendar for accurate lunar-based dates) ---
-        { name:"Eid al-Fitr (approx)", date:new Date(year,3,10), wear:"Festive wear 🕌" },
-        { name:"Eid al-Adha (approx)", date:new Date(year,5,17), wear:"Festive attire 🐑" },
-    
-        // --- Sikh ---
-        { name:"Baisakhi", date:new Date(year,3,13), wear:"Colourful Punjabi dress 💃" },
-    
-        // --- Jain ---
-        { name:"Mahavir Jayanti", date:new Date(year,3,21), wear:"White attire 🙏" },
-    
-        // --- Buddhist ---
-        { name:"Buddha Purnima", date:new Date(year,4,12), wear:"White/Yellow attire 🌼" },
-    
-        // --- Christian ---
-        { name:"Good Friday", date:new Date(easter.getFullYear(), easter.getMonth(), easter.getDate()-2), wear:"Somber attire ✝️" },
-        { name:"Easter", date:easter, wear:"Pastel colours ✝️" },
-        { name:"Christmas", date:new Date(year,11,25), wear:"Red & White 🎅" },
-    
-        // --- Jewish (approx / placeholders for fixed-year planning) ---
-        { name:"Hanukkah (start - placeholder)", date:new Date(year,11,18), wear:"Blue/White ✡️" },
-    
-        // --- Adivasi / Tribal (examples) ---
-        { name:"Karam Festival (example)", date:new Date(year,8,17), wear:"Traditional tribal attire 🌿" },
-        { name:"Sarhul (example)", date:new Date(year,2,23), wear:"Traditional attire 🌸" },
-    
-        // --- Jayantis / Special Days ---
-        { name:"Swami Vivekananda Jayanti", date:new Date(year,0,12), wear:"Simple attire 🙏" },
-        { name:"Rabindranath Tagore Jayanti", date:new Date(year,4,7), wear:"Traditional attire 🎨" },
-        { name:"Maharishi Valmiki Jayanti", date:new Date(year,8,27), wear:"Traditional attire 🙏" },
-        { name:"Guru Ravidas Jayanti", date:new Date(year,0,19), wear:"Traditional attire 🙏" },
-        { name:"Dr. Ambedkar Jayanti", date:new Date(year,3,14), wear:"Formal/traditional 📜" },
-    
-        // --- Special / Observances ---
-        { name:"Valentine's Day", date:new Date(year,1,14), wear:"Red outfits ❤️" },
-        // Mother's/Father's Day are 2nd/3rd Sunday - we'll calculate on the fly below
-      ];
-    
-      // add Mother's Day (2nd Sunday May) and Father's Day (3rd Sunday June)
-      function nthSundayOfMonth(y,m,n){
-        let dt=new Date(y,m,1),count=0;
-        while(dt.getMonth()===m){
-          if(dt.getDay()===0){ count++; if(count===n) return new Date(y,m,dt.getDate()); }
-          dt.setDate(dt.getDate()+1);
-        }
-      }
-      list.push({ name:"Mother's Day", date:nthSundayOfMonth(year,4,2), wear:"Elegant casuals 🌸" });
-      list.push({ name:"Father's Day", date:nthSundayOfMonth(year,5,3), wear:"Casual shirts 👔" });
-    
-      return list;
-    }
-    
-    // ---------------- GOOGLE CALENDAR FETCH ----------------
-    async function fetchEventsFromCalendar(apiKey, calendarId, timeMinISO, timeMaxISO){
-      const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${encodeURIComponent(apiKey)}&timeMin=${encodeURIComponent(timeMinISO)}&timeMax=${encodeURIComponent(timeMaxISO)}&singleEvents=true&orderBy=startTime&maxResults=2500`;
-      try {
-        const res = await fetch(url);
-        if(!res.ok){
-          const txt = await res.text();
-          console.warn("Google Calendar fetch failed",res.status, txt);
-          return [];
-        }
-        const data = await res.json();
-        if(!data.items) return [];
-        return data.items.map(ev => {
-          const start = ev.start.date ? new Date(ev.start.date) : new Date(ev.start.dateTime || ev.start.date);
-          return {
-            name: ev.summary || "Unnamed Event",
-            date: new Date(start.getFullYear(), start.getMonth(), start.getDate()),
-            wear: ev.description ? extractWearFromDescription(ev.description) : (ev.summary ? "" : "")
-          };
-        });
-      } catch(err){
-        console.error("fetchEventsFromCalendar error:", err);
-        return [];
-      }
-    }
-    
-    function extractWearFromDescription(desc){
-      const m = desc.match(/wear\s*:\s*(.+)/i);
-      return m ? m[1].trim() : "";
-    }
-    
-    // ---------------- BUILD MERGED ENTRIES ----------------
-    async function buildFestivalEntries() {
-      const today = new Date();
-      const start = normalizeDate(today);
-      const end = normalizeDate(addDays(start, LOOKAHEAD_DAYS));
-    
-      // 1) remote calendar (if config provided)
-      let remote = [];
-      if(API_KEY && CALENDAR_ID && !CALENDAR_ID.includes("your_festival_calendar_id")) {
-        remote = await fetchEventsFromCalendar(API_KEY, CALENDAR_ID, isoDateTimeAtStartOfDay(start), isoDateTimeAtStartOfDay(end));
-      } else {
-        console.warn("CALENDAR_ID not set to a public calendar — remote fetch skipped. To enable remote calendar, set CALENDAR_ID to a public festival calendar id.");
-      }
-    
-      // 2) local fallback for current year and also next year (so navigation across year boundary works)
-      const localThisYear = getLocalFestivalList(start.getFullYear());
-      const localNextYear = getLocalFestivalList(start.getFullYear()+1);
-    
-      // 3) overrides (year-specific precise dates, e.g. Navratri/Durga Puja)
-      const overridesThis = getOverridesForYear(start.getFullYear());
-      const overridesNext = getOverridesForYear(start.getFullYear()+1);
-    
-      // combine arrays
-      const combined = [...localThisYear, ...localNextYear, ...overridesThis, ...overridesNext, ...remote];
-    
-      // build map by ISO date string
-      const map = new Map();
-      for(const ev of combined){
-        if(!ev || !ev.date) continue;
-        const key = normalizeDate(ev.date).toISOString();
-        if(!map.has(key)) map.set(key, []);
-        // avoid duplicate names on same day
-        const arr = map.get(key);
-        if(!arr.find(x => x.name === ev.name)) arr.push(ev);
-      }
-    
-      // convert to sorted entries
-      const entries = Array.from(map.entries()).map(([iso, events]) => ({
-        date: new Date(iso),
-        events
-      })).sort((a,b) => a.date - b.date);
-    
-      return entries;
-    }
-    
-    // ---------------- GET TODAY / NEXT ----------------
-    function getTodaysFestivals(entries) {
-      const todayISO = normalizeDate(new Date()).toISOString();
-      const e = entries.find(x => x.date.toISOString() === todayISO);
-      return e ? e.events : [];
-    }
-    function getNextFestivalEntry(entries) {
-      const today = normalizeDate(new Date());
-      for(const e of entries){
-        if(e.date > today) return e;
-      }
-      return null;
-    }
+   
     
     // ---------------- DISPLAY ----------------
     async function displayGreetingAndFestival() {
       const greetingEl = document.getElementById("greeting");
-      const festivalEl = document.getElementById("festival");
-      const suggestionEl = document.getElementById("suggestion");
-      const noOccasionEl = document.getElementById("noOccasion");
-      const upcomingEl = document.getElementById("upcoming");
-    
+   
       if(greetingEl) greetingEl.textContent = getGreeting();
-    
-      const entries = await buildFestivalEntries();
-    
-      // Today's events
-      const todays = getTodaysFestivals(entries);
-    
-      if(todays.length > 0){
-        if(festivalEl) festivalEl.textContent = "🎉 " + todays.map(t => t.name).join(", ") + " 🎉";
-        const wearEv = todays.find(t => t.wear && t.wear.trim()) || todays[0];
-        if(suggestionEl) suggestionEl.textContent = wearEv && wearEv.wear ? "👗 Suggested Wear: " + wearEv.wear : "";
-        if(noOccasionEl) noOccasionEl.textContent = "";
-        if(upcomingEl) upcomingEl.textContent = "";
-      } else {
-        if(festivalEl) festivalEl.textContent = "";
-        if(suggestionEl) suggestionEl.textContent = "";
-        if(noOccasionEl) noOccasionEl.textContent = "No special occasion today.";
-    
-        const next = getNextFestivalEntry(entries);
-        if(next){
-          const today = normalizeDate(new Date());
-          const diffDays = Math.ceil((normalizeDate(next.date) - today) / (1000*60*60*24));
-          const nextNames = next.events.map(e => e.name).join(", ");
-          if(upcomingEl) upcomingEl.textContent = `🔔 Upcoming: ${nextNames} on ${next.date.toDateString()} (${diffDays} days left)`;
-        } else {
-          if(upcomingEl) upcomingEl.textContent = "";
-        }
-      }
+     
+       
     }
     
     // run
     window.addEventListener("DOMContentLoaded", displayGreetingAndFestival);
 
-
-
-
-
-
-// ✅ Function to fetch from Google Calendar
-async function fetchFestivalEvents(year, month) {
-  try {
-    const startDate = new Date(year, month - 1, 1).toISOString();
-    const endDate = new Date(year, month, 0).toISOString();
-
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${startDate}&timeMax=${endDate}&singleEvents=true&orderBy=startTime`;
-    const response = await fetch(url);
-
-    if (!response.ok) throw new Error("API error");
-    const data = await response.json();
-
-    return data.items.map(event => ({
-      name: event.summary,
-      date: event.start.date || event.start.dateTime,
-      wear: getDressCode(event.summary)
-    }));
-  } catch (err) {
-    console.warn("API failed, using local fallback.", err);
-    return (localFestivals[year] || []).filter(ev => {
-      const evDate = new Date(ev.date);
-      return evDate.getMonth() + 1 === month;
-    });
-  }
-}
-
-// ✅ Dress code rules
-function getDressCode(eventName) {
-  const dressRules = {
-    "Pratipada": "Yellow/Traditional",
-    "Dwitiya": "Green/Traditional",
-    "Tritiya": "Grey/Traditional",
-    "Chaturthi": "Orange/Traditional",
-    "Panchami": "White/Traditional",
-    "Shashti": "Red/Traditional",
-    "Saptami": "Blue/Traditional",
-    "Ashtami": "Pink/Traditional",
-    "Navami": "Purple/Traditional",
-    "Dashami": "Red-Orange/Traditional",
-    "Dussehra": "Festive"
-  };
-  for (let key in dressRules) {
-    if (eventName.includes(key)) return dressRules[key];
-  }
-  return "Traditional"; // default
-}
-
-// ✅ Main loader
-async function loadFestivalCalendar() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1;
-
-  const events = await fetchFestivalEvents(year, month);
-  const container = document.getElementById("festival-calendar");
-  if (!container) return; // prevent crash if element missing
-  container.innerHTML = "";
-
-  if (!events.length) {
-    container.innerHTML = "<p>No festivals this month.</p>";
-    return;
-  }
-
-  events.forEach(event => {
-    const div = document.createElement("div");
-    div.className = "event";
-    div.innerHTML = `<strong>${event.date}</strong> - ${event.name} - <em>${event.wear}</em>`;
-    container.appendChild(div);
-  });
-}
-
-// ✅ Auto run
-loadFestivalCalendar();
-
-
-
-
-
-
-
-
-    
-
+ 
   (function(){
     "use strict";
   
